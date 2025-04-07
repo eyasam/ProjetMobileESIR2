@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/bluetoothTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connexion Bluetooth"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/color11"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        android:id="@+id/startScanButton"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/bluetoothTitle"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="@string/scan"
+        android:textColor="@color/color1"
+        android:textSize="20dp"
+        android:backgroundTint="@color/color11"
+        android:elevation="4dp"/>
+
+    <Button
+        android:id="@+id/stopScanButton"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/startScanButton"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="@string/scanStop"
+        android:textColor="@color/color1"
+        android:textSize="20dp"
+        android:backgroundTint="@color/color11"
+        android:elevation="4dp"/>
+
+
+    <TextView
+        android:id="@+id/deviceListLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/stopScanButton"
+        android:layout_marginTop="15dp"
+        android:text="Appareils détectés :"
+        android:textColor="@color/color11"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <ListView
+        android:id="@+id/deviceListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/deviceListLabel"
+        android:divider="@color/black"
+        android:dividerHeight="1dp"
+        android:background="@color/white"
+        android:padding="8dp"
+        android:listSelector="@android:color/black" />
+</RelativeLayout>

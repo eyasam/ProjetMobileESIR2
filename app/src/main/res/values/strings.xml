@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ProjetMobileESIR2</string>
+    <string name="Title">Play2Win</string>
+    <string name="play">JOUER</string>
+    <string name="trainMode">MODE ENTRAÎNEMENT</string>
+    <string name="credit">Made by Eya Sammari and Ayat Allah El Anouar - ESIR 2</string>
+    <string name="scan">Démarrer Scan 🔍</string>
+    <string name="scanStop">Arrêter Scan ❌</string>
+</resources>

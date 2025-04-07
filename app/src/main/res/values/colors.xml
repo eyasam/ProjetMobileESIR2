@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="color1">#F3FAFB</color>
+    <color name="color2">#F1E9E7</color>
+    <color name="color3">#EADDCF</color>
+    <color name="color4">#E8C3B4</color>
+    <color name="color5">#B59A81</color>
+
+    <color name="color12">#F2D5DC</color>
+    <color name="color13">#D6BCA5</color>
+    <color name="color14">#B39084</color>
+    <color name="color11">#C67F89</color>
+    <color name="color15">#734158</color>
+
+    <color name="creditColor">#888888</color>
+
+</resources>
