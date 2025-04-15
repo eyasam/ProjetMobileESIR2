@@ -11,7 +11,7 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.projetmobileesir2.Defis.DefiActivity;
+import com.example.projetmobileesir2.Modes.SoloGameActivity;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -57,7 +57,7 @@ public class BluetoothClientThread extends Thread {
 
             if (context instanceof Activity) {
                 ((Activity) context).runOnUiThread(() -> {
-                    Intent intent = new Intent(context, DefiActivity.class);
+                    Intent intent = new Intent(context, SoloGameActivity.class);
                     context.startActivity(intent);
                 });
             }

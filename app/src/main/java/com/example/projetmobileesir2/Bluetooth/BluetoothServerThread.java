@@ -12,7 +12,7 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.projetmobileesir2.Defis.DefiActivity;
+import com.example.projetmobileesir2.Modes.SoloGameActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,7 +66,7 @@ public class BluetoothServerThread extends Thread {
                         Log.d("BT", "Message READY reçu !");
                         if (context instanceof Activity) {
                             ((Activity) context).runOnUiThread(() -> {
-                                Intent intent = new Intent(context, DefiActivity.class);
+                                Intent intent = new Intent(context, SoloGameActivity.class);
                                 context.startActivity(intent);
                             });
                         }

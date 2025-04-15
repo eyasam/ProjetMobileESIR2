@@ -6,4 +6,7 @@
     <string name="credit">Made by Eya Sammari and Ayat Allah El Anouar - ESIR 2</string>
     <string name="scan">Démarrer Scan 🔍</string>
     <string name="scanStop">Arrêter Scan ❌</string>
+    <string name="shake">Secoue ton téléphone !</string>
+    <string name="timer">Temps : 20s</string>
+    <string name="secousses_0">Secousses : 0</string>
 </resources>
