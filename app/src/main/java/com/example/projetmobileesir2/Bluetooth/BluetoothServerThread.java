@@ -1,6 +1,7 @@
 package com.example.projetmobileesir2.Bluetooth;
 
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
@@ -12,7 +13,6 @@ import android.util.Log;
 import androidx.core.content.ContextCompat;
 
 import com.example.projetmobileesir2.Defis.DefiActivity;
-import com.example.projetmobileesir2.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,15 +49,10 @@ public class BluetoothServerThread extends Thread {
             return;
         }
 
-        BluetoothSocket socket;
-        while (true) {
-            try {
-                Log.d("BT", "En attente de connexion...");
-                socket = serverSocket.accept();
-            } catch (IOException e) {
-                Log.e("BT", "Erreur accept()", e);
-                break;
-            }
+        BluetoothSocket socket = null;
+        try {
+            Log.d("BT", "En attente de connexion...");
+            socket = serverSocket.accept();
 
             if (socket != null) {
                 Log.d("BT", "Connexion acceptée !");
@@ -69,17 +64,27 @@ public class BluetoothServerThread extends Thread {
 
                     if ("READY".equals(message)) {
                         Log.d("BT", "Message READY reçu !");
-                        ((MainActivity) context).runOnUiThread(() -> {
-                            Intent intent = new Intent(context, DefiActivity.class); // à créer
-                            context.startActivity(intent);
-                        });
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() -> {
+                                Intent intent = new Intent(context, DefiActivity.class);
+                                context.startActivity(intent);
+                            });
+                        }
                     }
 
                 } catch (IOException e) {
                     Log.e("BT", "Erreur lecture du message", e);
                 }
+            }
 
-                break;
+        } catch (IOException e) {
+            Log.e("BT", "Erreur accept()", e);
+        } finally {
+            try {
+                if (socket != null) socket.close();
+                serverSocket.close();
+            } catch (IOException e) {
+                Log.e("BT", "Erreur fermeture socket serveur", e);
             }
         }
     }

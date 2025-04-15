@@ -1,17 +1,17 @@
 package com.example.projetmobileesir2.Bluetooth;
 
+import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.Manifest;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.projetmobileesir2.Defis.DefiActivity;
-import com.example.projetmobileesir2.MainActivity;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,20 +47,22 @@ public class BluetoothClientThread extends Thread {
         }
 
         try {
+            Thread.sleep(500); // Petit délai pour éviter les soucis de timing
             socket.connect();
             Log.d("BT", "Connexion réussie au serveur !");
 
-            // Envoi du message "READY"
             OutputStream outputStream = socket.getOutputStream();
             outputStream.write("READY\n".getBytes());
+            outputStream.flush(); // Très important pour garantir que le message est bien envoyé
 
-            // Passer à l'activité suivante (défi) côté client
-            ((MainActivity) context).runOnUiThread(() -> {
-                Intent intent = new Intent(context, DefiActivity.class); // à créer
-                context.startActivity(intent);
-            });
+            if (context instanceof Activity) {
+                ((Activity) context).runOnUiThread(() -> {
+                    Intent intent = new Intent(context, DefiActivity.class);
+                    context.startActivity(intent);
+                });
+            }
 
-        } catch (IOException connectException) {
+        } catch (IOException | InterruptedException connectException) {
             Log.e("BT", "Connexion échouée", connectException);
             try {
                 socket.close();
