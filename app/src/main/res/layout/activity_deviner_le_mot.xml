@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Devine le mot"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/color11"
+        android:fontFamily="casual"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Enigme/Indice -->
+    <TextView
+        android:id="@+id/tvEnigme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Indice : Je suis jaune, courbé, et on me mange"
+        android:textSize="18sp"
+        android:textColor="@color/color5"
+        android:layout_below="@id/tvTitle"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="casual" />
+
+
+
+    <EditText
+        android:id="@+id/etRéponse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Entrez votre réponse ici"
+        android:textColor="@color/color15"
+        android:layout_below="@id/tvEnigme"
+        android:layout_marginTop="25dp"
+        android:padding="12dp"
+        android:fontFamily="casual" />
+
+    <Button
+        android:id="@+id/btnValider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valider"
+        android:textColor="@color/color15"
+        android:background="@color/color12"
+        android:layout_below="@id/etRéponse"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="casual" />
+
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10s"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/color11"
+        android:layout_below="@id/btnValider"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="casual" />
+
+    <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score : 0"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/color15"
+        android:layout_below="@id/tvTimer"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="casual" />
+
+
+</RelativeLayout>
