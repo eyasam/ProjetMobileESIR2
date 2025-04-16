@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/quizLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="16dp">
+
+    <!-- Score en haut à gauche -->
+    <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score : 0"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp" />
+
+    <!-- Timer en haut à droite -->
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="60s"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp" />
+
+    <!-- Question -->
+    <TextView
+        android:id="@+id/tvQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Qui est sur la photo ?"
+        android:textSize="20sp"
+        android:textColor="#333333"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tvScore"
+        android:layout_marginTop="40dp" />
+
+    <!-- Image -->
+    <ImageView
+        android:id="@+id/imageViewQuestion"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tvQuestion"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"/>
+
+    <!-- Boutons de réponses -->
+    <LinearLayout
+        android:id="@+id/answerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageViewQuestion"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/btnAnswerA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Réponse A"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="#4CAF50"
+            android:layout_marginTop="12dp"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnAnswerB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Réponse B"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="#4CAF50"
+            android:layout_marginTop="12dp"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnAnswerC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Réponse C"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="#4CAF50"
+            android:layout_marginTop="12dp"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnAnswerD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Réponse D"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="#4CAF50"
+            android:layout_marginTop="12dp"
+            android:padding="12dp" />
+    </LinearLayout>
+
+</RelativeLayout>
