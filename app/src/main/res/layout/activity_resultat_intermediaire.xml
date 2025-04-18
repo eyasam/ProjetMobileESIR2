@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutIntermediaire"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:gravity="center"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/tvIntermediaireScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score du premier défi : "
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:id="@+id/tvSuite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Préparation du deuxième défi..."
+        android:textSize="18sp"
+        android:textColor="#555555"
+        android:layout_marginTop="10dp" />
+</LinearLayout>
