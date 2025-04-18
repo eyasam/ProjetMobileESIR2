@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="#FAFAFA">
+
+    <TextView
+        android:id="@+id/multiStatusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connexion réussie !"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"
+        android:textColor="#333333" />
+
+    <TextView
+        android:id="@+id/multiInstructionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="En attente d’un adversaire..."
+        android:textSize="18sp"
+        android:textColor="#666666" />
+
+</LinearLayout>

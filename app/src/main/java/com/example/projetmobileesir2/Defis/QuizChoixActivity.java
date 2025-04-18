@@ -1,15 +1,18 @@
 package com.example.projetmobileesir2.Defis;
 
+import android.content.*;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
 
 import java.util.ArrayList;
@@ -26,9 +29,25 @@ public class QuizChoixActivity extends AppCompatActivity {
     private int currentQuestionIndex = 0;
     private boolean gameOver = false;
 
+    private boolean isMultiplayer, isHost;
+
     private CountDownTimer timer;
+    private long timeLeftMillis = 30000;
+    private long timerStartedAt = 0;
+    private long pauseTime = 0;
+    private boolean isPaused = false;
 
     private final List<Question> questions = new ArrayList<>();
+
+    private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            if ("START_QUIZ".equals(message)) {
+                startQuiz();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +63,20 @@ public class QuizChoixActivity extends AppCompatActivity {
         btnC = findViewById(R.id.btnAnswerC);
         btnD = findViewById(R.id.btnAnswerD);
 
+        isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        isHost = getIntent().getBooleanExtra("isHost", false);
+
         initQuestions();
-        startTimer();
-        showNextQuestion();
+
+        if (isMultiplayer) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(bluetoothReceiver, new IntentFilter("BLUETOOTH_MESSAGE"));
+            if (isHost) {
+                com.example.projetmobileesir2.Bluetooth.BluetoothConnectionHolder.sendMessage("START_QUIZ");
+                startQuiz();
+            }
+        } else {
+            startQuiz();
+        }
     }
 
     private void initQuestions() {
@@ -60,8 +90,28 @@ public class QuizChoixActivity extends AppCompatActivity {
         questions.add(new Question("Qui a peint La Joconde ?", 0, "Picasso", "Michel-Ange", "Léonard de Vinci", "Van Gogh", "Léonard de Vinci"));
         questions.add(new Question("Combien y a-t-il de planètes dans le système solaire ?", 0, "7", "8", "9", "10", "8"));
         questions.add(new Question("Combien de couleurs dans l’arc-en-ciel ?", 0, "6", "7", "8", "5", "7"));
-
         Collections.shuffle(questions);
+    }
+
+    private void startQuiz() {
+        startTimer(timeLeftMillis);
+        showNextQuestion();
+    }
+
+    private void startTimer(long millis) {
+        timerStartedAt = SystemClock.elapsedRealtime();
+
+        timer = new CountDownTimer(millis, 1000) {
+            public void onTick(long millisUntilFinished) {
+                timeLeftMillis = millisUntilFinished;
+                tvTimer.setText(millisUntilFinished / 1000 + "s");
+            }
+
+            public void onFinish() {
+                timeLeftMillis = 0;
+                endGame();
+            }
+        }.start();
     }
 
     private void showNextQuestion() {
@@ -111,21 +161,9 @@ public class QuizChoixActivity extends AppCompatActivity {
         });
     }
 
-    private void startTimer() {
-        timer = new CountDownTimer(30000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                tvTimer.setText(millisUntilFinished / 1000 + "s");
-            }
-
-            public void onFinish() {
-                endGame();
-            }
-        };
-        timer.start();
-    }
-
     private void endGame() {
         gameOver = true;
+        if (timer != null) timer.cancel();
         tvQuestion.setText("Fin du jeu !");
         tvTimer.setText("0s");
         imageViewQuestion.setVisibility(View.GONE);
@@ -134,6 +172,7 @@ public class QuizChoixActivity extends AppCompatActivity {
         btnC.setEnabled(false);
         btnD.setEnabled(false);
         playSound(R.raw.victory);
+        finishDefi();
     }
 
     private void playSound(int resId) {
@@ -142,10 +181,48 @@ public class QuizChoixActivity extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(MediaPlayer::release);
     }
 
+    private void finishDefi() {
+        if (isMultiplayer) {
+            MultiplayerGameActivity.saveLocalScore(score);
+        } else {
+            Intent intent = new Intent(this, ResultatsActivity.class);
+            intent.putExtra("scoreLocal", score);
+            startActivity(intent);
+        }
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (timer != null) {
+            timer.cancel();
+            pauseTime = SystemClock.elapsedRealtime();
+            isPaused = true;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (gameOver || timeLeftMillis <= 0) return;
+
+        if (isPaused) {
+            long delta = SystemClock.elapsedRealtime() - pauseTime;
+            timeLeftMillis = Math.max(0, timeLeftMillis - delta);
+            isPaused = false;
+        }
+
+        startTimer(timeLeftMillis);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
         if (timer != null) timer.cancel();
+        if (isMultiplayer) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver);
+        }
     }
 
     static class Question {

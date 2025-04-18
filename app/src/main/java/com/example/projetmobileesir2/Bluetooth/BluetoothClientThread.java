@@ -8,75 +8,105 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
-
 import androidx.core.content.ContextCompat;
-
-import com.example.projetmobileesir2.Modes.SoloGameActivity;
-
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.UUID;
 
+/**
+ * Gère la connexion à un serveur Bluetooth, l'envoi initial du message READY,
+ * la réception de messages asynchrones, et le démarrage de l'activité multijoueur.
+ */
 public class BluetoothClientThread extends Thread {
-    private final BluetoothSocket socket;
-    private final BluetoothDevice device;
-    private static final UUID APP_UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
-    private final Context context;
 
+    private final BluetoothSocket socket;
+    private final Context context;
+    private static final UUID APP_UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+
+    /**
+     * Constructeur du client.
+     * Initialise un socket Bluetooth vers le device distant.
+     */
     public BluetoothClientThread(BluetoothDevice device, Context context) {
-        this.device = device;
         this.context = context;
         BluetoothSocket tmp = null;
 
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
+                == PackageManager.PERMISSION_GRANTED) {
             try {
                 tmp = device.createRfcommSocketToServiceRecord(APP_UUID);
             } catch (IOException e) {
-                Log.e("BT", "Erreur création socket", e);
+                Log.e("APPPP_BT", "Erreur création socket", e);
             }
-        } else {
-            Log.e("BT", "Permission BLUETOOTH_CONNECT non accordée !");
         }
+
         socket = tmp;
     }
 
+    /**
+     * Démarre la connexion au serveur, envoie READY, écoute les messages entrants
+     * et lance l'activité multijoueur.
+     */
+    @Override
     public void run() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            Log.e("BT", "Pas de permission pour connecter");
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.e("APPPP_BT", "Permission BLUETOOTH_CONNECT refusée");
             return;
         }
 
         try {
-            Thread.sleep(500); // Petit délai pour éviter les soucis de timing
+            Thread.sleep(500);
             socket.connect();
-            Log.d("BT", "Connexion réussie au serveur !");
+            Log.d("APPPP_BT", "Connexion réussie au serveur !");
+            BluetoothConnectionHolder.setSocket(socket);
 
-            OutputStream outputStream = socket.getOutputStream();
-            outputStream.write("READY\n".getBytes());
-            outputStream.flush(); // Très important pour garantir que le message est bien envoyé
+            OutputStream os = socket.getOutputStream();
+            os.write("READY\n".getBytes());
+            os.flush();
 
-            if (context instanceof Activity) {
-                ((Activity) context).runOnUiThread(() -> {
-                    Intent intent = new Intent(context, SoloGameActivity.class);
-                    context.startActivity(intent);
-                });
-            }
+            listenForMessages();
 
-        } catch (IOException | InterruptedException connectException) {
-            Log.e("BT", "Connexion échouée", connectException);
+            Intent intent = new Intent(context, MultiplayerGameActivity.class);
+            intent.putExtra("isHost", false);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Log.d("APPPP_BT_DEBUG", "Client va lancer MultiplayerGameActivity");
+            context.startActivity(intent);
+
+            if (context instanceof Activity) ((Activity) context).finish();
+
+        } catch (IOException | InterruptedException e) {
+            Log.e("APPPP_BT", "Connexion échouée", e);
             try {
                 socket.close();
             } catch (IOException closeException) {
-                Log.e("BT", "Erreur fermeture socket", closeException);
+                Log.e("APPPP_BT", "Erreur fermeture socket", closeException);
             }
         }
     }
 
-    public void cancel() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            Log.e("BT", "Erreur fermeture socket", e);
-        }
+    /**
+     * Écoute en continu les messages Bluetooth entrants via un BufferedReader,
+     * puis les diffuse localement à l'app via un Intent.
+     */
+    private void listenForMessages() {
+        new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    Log.d("APPPP_BT_RECEIVE", "Reçu sur socket : " + line);
+                    Intent intent = new Intent("BLUETOOTH_MESSAGE");
+                    intent.putExtra("message", line);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                }
+            } catch (IOException e) {
+                Log.e("APPPP_BT", "Erreur réception message", e);
+            }
+        }).start();
     }
+
 }

@@ -1,18 +1,16 @@
 package com.example.projetmobileesir2.Defis;
 
-import android.media.MediaPlayer;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DefiDevineMotActivity extends AppCompatActivity {
@@ -21,12 +19,23 @@ public class DefiDevineMotActivity extends AppCompatActivity {
     private EditText etReponse;
     private Button btnValider;
 
-    private int score = 0;
-    private int currentIndex = 0;
+    private int score = 0, currentIndex = 0;
     private boolean partieTerminee = false;
+    private boolean isMultiplayer;
+
+    private long totalTimeMillis = 20000;
+    private long timeLeftMillis = totalTimeMillis;
+    private long timerStartedAt = 0;
+
     private CountDownTimer timer;
 
-    private List<MotIndice> listeQuestions;
+    private final List<MotIndice> questions = List.of(
+            new MotIndice("Je suis jaune, courbé, et on me mange", "banane"),
+            new MotIndice("Je brille la nuit dans le ciel", "lune"),
+            new MotIndice("Je suis le roi des animaux", "lion"),
+            new MotIndice("J’ai des touches et fais de la musique", "piano"),
+            new MotIndice("J’ai quatre roues et un moteur", "voiture")
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,109 +48,99 @@ public class DefiDevineMotActivity extends AppCompatActivity {
         etReponse = findViewById(R.id.etRéponse);
         btnValider = findViewById(R.id.btnValider);
 
-        initQuestions();
+        isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+
         afficherEnigme();
-        startTimer();
 
         btnValider.setOnClickListener(v -> {
             if (partieTerminee) return;
 
-            String reponse = etReponse.getText().toString().trim().toLowerCase();
-            String bonneReponse = listeQuestions.get(currentIndex).reponse.toLowerCase();
+            String input = etReponse.getText().toString().trim().toLowerCase();
+            boolean correct = input.equals(questions.get(currentIndex).reponse.toLowerCase());
 
-            if (reponse.equals(bonneReponse)) {
+            if (correct) {
                 score++;
                 tvScore.setText("Score : " + score);
-                etReponse.setText("");
-
-                // ✅ Fond vert temporaire
-                etReponse.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-                etReponse.postDelayed(() ->
-                        etReponse.setBackgroundColor(getResources().getColor(android.R.color.transparent)), 600);
-
-                passerQuestionSuivante();
-            } else {
-                etReponse.setText("");
-
-                // ❌ Fond rouge temporaire
-                etReponse.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
-                etReponse.postDelayed(() ->
-                        etReponse.setBackgroundColor(getResources().getColor(android.R.color.transparent)), 600);
+                if (++currentIndex < questions.size()) {
+                    afficherEnigme();
+                } else {
+                    terminerPartie();
+                }
             }
+
+            etReponse.setText("");
+            int color = getResources().getColor(correct ? android.R.color.holo_green_light : android.R.color.holo_red_light);
+            etReponse.setBackgroundColor(color);
+            etReponse.postDelayed(() ->
+                    etReponse.setBackgroundColor(getResources().getColor(android.R.color.transparent)), 600);
         });
-
-
     }
-
-    private void initQuestions() {
-        listeQuestions = new ArrayList<>();
-        listeQuestions.add(new MotIndice("Je suis jaune, courbé, et on me mange", "banane"));
-        listeQuestions.add(new MotIndice("Je brille la nuit dans le ciel", "lune"));
-        listeQuestions.add(new MotIndice("Je suis le roi des animaux", "lion"));
-        listeQuestions.add(new MotIndice("J’ai des touches et fais de la musique", "piano"));
-        listeQuestions.add(new MotIndice("J’ai quatre roues et un moteur", "voiture"));
-    }
-
-    private void passerQuestionSuivante() {
-        currentIndex++;
-        if (currentIndex < listeQuestions.size()) {
-            afficherEnigme();
-        } else {
-            partieTerminee = true;
-            tvEnigme.setText("Partie terminée !");
-            etReponse.setEnabled(false);
-            btnValider.setEnabled(false);
-            playVictorySound();
-        }
-    }
-
 
     private void afficherEnigme() {
-        tvEnigme.setText("Indice : " + listeQuestions.get(currentIndex).indice);
+        tvEnigme.setText("Indice : " + questions.get(currentIndex).indice);
     }
 
-    private void startTimer() {
-        timer = new CountDownTimer(20000, 1000) {
+    private void startTimer(long millis) {
+        timerStartedAt = System.currentTimeMillis();
+        timer = new CountDownTimer(millis, 1000) {
             public void onTick(long millisUntilFinished) {
+                timeLeftMillis = millisUntilFinished;
                 tvTimer.setText((millisUntilFinished / 1000) + "s");
             }
 
             public void onFinish() {
-                partieTerminee = true;
+                timeLeftMillis = 0;
                 tvTimer.setText("0s");
-
-                tvEnigme.setText("Partie terminée !");
-                tvScore.setText("Score final : " + score);
-
-                etReponse.setEnabled(false);
-                btnValider.setEnabled(false);
-
-                playVictorySound();
+                terminerPartie();
             }
-
         };
         timer.start();
     }
 
-    private void playVictorySound() {
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.victory);
-        mediaPlayer.start();
-        mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+    private void terminerPartie() {
+        partieTerminee = true;
+        if (timer != null) timer.cancel();
+        tvEnigme.setText("Partie terminée !");
+        tvScore.setText("Score final : " + score);
+        tvTimer.setText("0s");
+        etReponse.setEnabled(false);
+        btnValider.setEnabled(false);
+
+        if (isMultiplayer) {
+            MultiplayerGameActivity.saveLocalScore(score);
+        } else {
+            Intent intent = new Intent(this, ResultatsActivity.class);
+            intent.putExtra("scoreLocal", score);
+            startActivity(intent);
+        }
+
+        finish();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (timer != null) timer.cancel();
+    protected void onResume() {
+        super.onResume();
+        if (!partieTerminee) {
+            startTimer(timeLeftMillis);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (timer != null) {
+            timer.cancel();
+            // met à jour timeLeftMillis en fonction du temps réellement passé
+            long elapsed = System.currentTimeMillis() - timerStartedAt;
+            timeLeftMillis = Math.max(0, timeLeftMillis - elapsed);
+        }
     }
 
     static class MotIndice {
-        String indice;
-        String reponse;
-
-        MotIndice(String indice, String reponse) {
-            this.indice = indice;
-            this.reponse = reponse;
+        final String indice, reponse;
+        MotIndice(String i, String r) {
+            indice = i;
+            reponse = r;
         }
     }
 }

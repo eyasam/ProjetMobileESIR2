@@ -1,24 +1,24 @@
 package com.example.projetmobileesir2.Defis;
 
-import android.content.Context;
+import android.content.*;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
+import android.os.*;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
 
 public class ShakeActivity extends AppCompatActivity {
 
-    private static final int Seuil_sensibilite = 5000;
-    private static final int duree_defi = 10000;
+    private static final int SEUIL_SENSIBILITE = 5000;
+    private static final int DUREE_DEFI = 10000;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -27,11 +27,17 @@ public class ShakeActivity extends AppCompatActivity {
     private TextView shakeCountText, timerText, resultText;
     private int shakeCount = 0;
     private boolean challengeRunning = false;
+    private boolean isMultiplayer, isHost;
 
     private float lastX, lastY, lastZ;
     private long lastUpdate = 0;
 
-    // Listener pour les événements de mouvement
+    private CountDownTimer countDownTimer;
+    private long timeLeftMillis = DUREE_DEFI;
+    private long timerStartedAt = 0;
+    private long pauseTime = 0;
+    private boolean isPaused = false;
+
     private final SensorEventListener shakeListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -52,7 +58,7 @@ public class ShakeActivity extends AppCompatActivity {
 
                 float speed = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) / diffTime * 10000;
 
-                if (speed > Seuil_sensibilite) {
+                if (speed > SEUIL_SENSIBILITE) {
                     shakeCount++;
                     shakeCountText.setText("Secousses : " + shakeCount);
                     vibrate();
@@ -68,6 +74,16 @@ public class ShakeActivity extends AppCompatActivity {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
 
+    private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            if ("GO_SHAKE".equals(message)) {
+                startChallenge();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,40 +97,108 @@ public class ShakeActivity extends AppCompatActivity {
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        startChallenge();
+        isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        isHost = getIntent().getBooleanExtra("isHost", false);
+
+        if (isMultiplayer) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(
+                    bluetoothReceiver, new IntentFilter("BLUETOOTH_MESSAGE"));
+
+            if (isHost) {
+                new Handler().postDelayed(() -> {
+                    com.example.projetmobileesir2.Bluetooth.BluetoothConnectionHolder.sendMessage("GO_SHAKE");
+                    startChallenge();
+                }, 700);
+            }
+        } else {
+            startChallenge();
+        }
     }
 
     private void startChallenge() {
         shakeCount = 0;
         challengeRunning = true;
-        sensorManager.registerListener(shakeListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        registerSensor();
+        startTimer(timeLeftMillis);
+    }
 
-        new CountDownTimer(duree_defi, 1000) {
+    private void registerSensor() {
+        sensorManager.registerListener(shakeListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    private void unregisterSensor() {
+        sensorManager.unregisterListener(shakeListener);
+    }
+
+    private void startTimer(long millis) {
+        timerStartedAt = SystemClock.elapsedRealtime();
+
+        countDownTimer = new CountDownTimer(millis, 1000) {
             public void onTick(long millisUntilFinished) {
+                timeLeftMillis = millisUntilFinished;
                 timerText.setText("Temps : " + millisUntilFinished / 1000 + "s");
             }
 
             public void onFinish() {
                 challengeRunning = false;
-                sensorManager.unregisterListener(shakeListener);
+                unregisterSensor();
                 timerText.setText("Temps : 0s");
                 resultText.setText("Défi terminé !\nScore final : " + shakeCount);
+                finishDefi();
             }
         }.start();
     }
 
-    // déclencher une vibration courte
     private void vibrate() {
         if (vibrator != null && vibrator.hasVibrator()) {
             vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
         }
     }
 
-    // On arrête les capteurs si l'activité se ferme
+    private void finishDefi() {
+        if (isMultiplayer) {
+            MultiplayerGameActivity.saveLocalScore(shakeCount);
+        } else {
+            Intent intent = new Intent(this, ResultatsActivity.class);
+            intent.putExtra("scoreLocal", shakeCount);
+            startActivity(intent);
+        }
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            pauseTime = SystemClock.elapsedRealtime();
+            isPaused = true;
+        }
+        unregisterSensor();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!challengeRunning || timeLeftMillis <= 0) return;
+
+        if (isPaused) {
+            long delta = SystemClock.elapsedRealtime() - pauseTime;
+            timeLeftMillis = Math.max(0, timeLeftMillis - delta);
+            isPaused = false;
+        }
+
+        registerSensor();
+        startTimer(timeLeftMillis);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
-        sensorManager.unregisterListener(shakeListener);
-        challengeRunning = false;
+        unregisterSensor();
+        if (countDownTimer != null) countDownTimer.cancel();
+        if (isMultiplayer) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver);
+        }
     }
 }

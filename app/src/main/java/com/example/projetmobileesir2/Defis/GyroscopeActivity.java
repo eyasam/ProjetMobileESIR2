@@ -1,28 +1,30 @@
 package com.example.projetmobileesir2.Defis;
 
-import android.content.Context;
+import android.content.*;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.*;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
 
 import java.util.Random;
 
-
 public class GyroscopeActivity extends AppCompatActivity {
 
-    private static final int Duree_jeux = 60000;
-    private static final int Marge = 10;
+    private static final int DUREE_JEU = 60000;
+    private static final int MARGE = 10;
+
     private SensorManager sensorManager;
     private Sensor rotationSensor;
     private TextView angleView, targetView, scoreView, resultView, timerView;
@@ -33,17 +35,21 @@ public class GyroscopeActivity extends AppCompatActivity {
     private int targetAngle = 0;
     private int score = 0;
     private boolean challengeRunning = false;
+    private boolean isMultiplayer, isHost;
 
     private CountDownTimer gameTimer;
+    private long timeLeftMillis = DUREE_JEU;
+    private long timerStartedAt = 0;
+    private boolean timerWasRunning = false;
 
-    // Écouteur pour le gyroscope :
+    private long pauseTime = 0;
+    private boolean isPaused = false;
+
     private final SensorEventListener sensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-
             if (!challengeRunning || event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR) return;
 
-            // Transformation des données en angle d’orientation (azimuth)
             float[] rotationMatrix = new float[9];
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             float[] orientation = new float[3];
@@ -52,22 +58,30 @@ public class GyroscopeActivity extends AppCompatActivity {
             float azimuth = (float) Math.toDegrees(orientation[0]);
             if (azimuth < 0) azimuth += 360;
 
-            // Mise à jour de l'interface avec l'angle
             updateAngleUI(azimuth);
-            rotationFleche(azimuth);
+            rotateArrow(azimuth);
 
-            // Si l'utilisateur vise correctement mise à jour du score
             if (isWithinTarget(azimuth)) {
                 score++;
                 scoreView.setText("Score : " + score);
                 playSound(R.raw.victory);
-                vertFlash();
-                nouvelleCible();
+                flashGreen();
+                generateNewTarget();
             }
         }
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    };
+
+    private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            if ("GO_GYRO".equals(message)) {
+                startChallenge();
+            }
+        }
     };
 
     @Override
@@ -77,7 +91,22 @@ public class GyroscopeActivity extends AppCompatActivity {
 
         initViews();
         initSensor();
-        startChallenge();
+
+        isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        isHost = getIntent().getBooleanExtra("isHost", false);
+
+        if (isMultiplayer) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(bluetoothReceiver, new IntentFilter("BLUETOOTH_MESSAGE"));
+
+            if (isHost) {
+                new Handler().postDelayed(() -> {
+                    com.example.projetmobileesir2.Bluetooth.BluetoothConnectionHolder.sendMessage("GO_GYRO");
+                    startChallenge();
+                }, 700);
+            }
+        } else {
+            startChallenge();
+        }
     }
 
     private void initViews() {
@@ -88,7 +117,6 @@ public class GyroscopeActivity extends AppCompatActivity {
         timerView = findViewById(R.id.timerText);
         arrowImage = findViewById(R.id.fleche);
         flashView = findViewById(R.id.flashView);
-
     }
 
     private void initSensor() {
@@ -97,27 +125,62 @@ public class GyroscopeActivity extends AppCompatActivity {
     }
 
     private void startChallenge() {
-        // Enregistrement du listener du capteur
-        if (rotationSensor != null) {
-            sensorManager.registerListener(sensorListener, rotationSensor, SensorManager.SENSOR_DELAY_UI);
-        }
-
         challengeRunning = true;
-        nouvelleCible(); // Première cible
+        generateNewTarget();
+        registerSensor();
+        startTimer(timeLeftMillis);
+    }
 
-        gameTimer = new CountDownTimer(Duree_jeux, 1000) {
+    private void startTimer(long millis) {
+        timerStartedAt = SystemClock.elapsedRealtime();
+        timerWasRunning = true;
+
+        gameTimer = new CountDownTimer(millis, 1000) {
             public void onTick(long millisUntilFinished) {
+                timeLeftMillis = millisUntilFinished;
                 timerView.setText("Temps : " + (millisUntilFinished / 1000) + "s");
             }
 
             public void onFinish() {
+                timeLeftMillis = 0;
+                timerView.setText("0s");
                 endChallenge();
+                finishDefi();
             }
         }.start();
     }
 
-    // Affiche un flash vert pendant 200ms
-    private void vertFlash() {
+    private void registerSensor() {
+        if (rotationSensor != null) {
+            sensorManager.registerListener(sensorListener, rotationSensor, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
+
+    private void unregisterSensor() {
+        sensorManager.unregisterListener(sensorListener);
+    }
+
+    private void generateNewTarget() {
+        targetAngle = random.nextInt(360);
+        targetView.setText("Cible : " + targetAngle + "°");
+    }
+
+    private boolean isWithinTarget(float angle) {
+        float delta = Math.abs(angle - targetAngle);
+        return delta <= MARGE || delta >= (360 - MARGE);
+    }
+
+    private void updateAngleUI(float angle) {
+        angleView.setText(String.format("Ton angle : %.0f°", angle));
+    }
+
+    private void rotateArrow(float angle) {
+        arrowImage.setPivotX(arrowImage.getWidth() / 2f);
+        arrowImage.setPivotY(arrowImage.getHeight() / 2f);
+        arrowImage.setRotation(angle);
+    }
+
+    private void flashGreen() {
         flashView.setAlpha(1f);
         flashView.setVisibility(View.VISIBLE);
         flashView.animate()
@@ -127,51 +190,63 @@ public class GyroscopeActivity extends AppCompatActivity {
                 .start();
     }
 
-    private void nouvelleCible() {
-        targetAngle = random.nextInt(360);
-        targetView.setText("Cible : " + targetAngle + "°");
-    }
-
-    // Vérifie si l'utilisateur est dans la bonne zone angulaire
-    private boolean isWithinTarget(float angle) {
-        float delta = Math.abs(angle - targetAngle);
-        return delta <= Marge || delta >= (360 - Marge);
-    }
-
-    // Affiche l'angle actuel de l'utilisateur
-    private void updateAngleUI(float angle) {
-        angleView.setText(String.format("Ton angle : %.0f°", angle));
-    }
-
-    // Fait tourner l’image de la fleche pour correspondre à l'orientation
-    private void rotationFleche(float angle) {
-        arrowImage.setPivotX(arrowImage.getWidth() / 2f);
-        arrowImage.setPivotY(arrowImage.getHeight() / 2f);
-        arrowImage.setRotation(angle);
-    }
-
-    private void playSound(int soundResId) {
-        MediaPlayer mp = MediaPlayer.create(this, soundResId);
-        mp.start();
-        mp.setOnCompletionListener(MediaPlayer::release);
-    }
-
     private void endChallenge() {
         challengeRunning = false;
-        sensorManager.unregisterListener(sensorListener);
-        timerView.setText("Temps : 0s");
+        unregisterSensor();
         resultView.setText("Défi terminé ! Score : " + score);
         playSound(R.raw.victory);
     }
 
-    // Arrêt du capteur et du timer si l'activité est quittée
+    private void finishDefi() {
+        if (isMultiplayer) {
+            MultiplayerGameActivity.saveLocalScore(score);
+        } else {
+            Intent intent = new Intent(this, ResultatsActivity.class);
+            intent.putExtra("scoreLocal", score);
+            startActivity(intent);
+        }
+        finish();
+    }
+
+    private void playSound(int resId) {
+        MediaPlayer mp = MediaPlayer.create(this, resId);
+        mp.start();
+        mp.setOnCompletionListener(MediaPlayer::release);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (timerWasRunning && gameTimer != null) {
+            gameTimer.cancel();
+            pauseTime = SystemClock.elapsedRealtime();
+            isPaused = true;
+        }
+        unregisterSensor();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!challengeRunning || timeLeftMillis <= 0) return;
+
+        if (isPaused) {
+            long delta = SystemClock.elapsedRealtime() - pauseTime;
+            timeLeftMillis = Math.max(0, timeLeftMillis - delta);
+            isPaused = false;
+        }
+
+        registerSensor();
+        startTimer(timeLeftMillis);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
-        sensorManager.unregisterListener(sensorListener);
-
-        if (gameTimer != null) {
-            gameTimer.cancel();
+        unregisterSensor();
+        if (gameTimer != null) gameTimer.cancel();
+        if (isMultiplayer) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver);
         }
     }
 }
