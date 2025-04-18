@@ -39,6 +39,8 @@ public class QuizChoixActivity extends AppCompatActivity {
 
     private final List<Question> questions = new ArrayList<>();
 
+    private  String mode;
+
     private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -66,6 +68,8 @@ public class QuizChoixActivity extends AppCompatActivity {
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         isHost = getIntent().getBooleanExtra("isHost", false);
 
+        mode = getIntent().getStringExtra("mode");
+
         initQuestions();
 
         if (isMultiplayer) {
@@ -80,16 +84,17 @@ public class QuizChoixActivity extends AppCompatActivity {
     }
 
     private void initQuestions() {
-        questions.add(new Question("Quel est le seul animal qui ne peut pas sauter ?", 0, "L'éléphant", "Le crocodile", "La baleine", "La tortue", "L'éléphant"));
-        questions.add(new Question("Combien de cœurs a une pieuvre ?", 0, "1", "2", "3", "8", "3"));
-        questions.add(new Question("Que signifie 'karaoké' en japonais ?", 0, "Chanter mal", "Orchestre vide", "Danse en duo", "Boisson sucrée", "Orchestre vide"));
-        questions.add(new Question("Quelle est la capitale du pays avec une feuille d’érable sur son drapeau ?", 0, "Toronto", "Vancouver", "Ottawa", "Montréal", "Ottawa"));
-        questions.add(new Question("Quel est le métal liquide à température ambiante ?", 0, "Mercure", "Plomb", "Aluminium", "Zinc", "Mercure"));
-        questions.add(new Question("Combien de pattes a une araignée ?", 0, "6", "8", "10", "12", "8"));
-        questions.add(new Question("Lequel est un fruit ?", 0, "Carotte", "Tomate", "Céleri", "Poireau", "Tomate"));
-        questions.add(new Question("Qui a peint La Joconde ?", 0, "Picasso", "Michel-Ange", "Léonard de Vinci", "Van Gogh", "Léonard de Vinci"));
-        questions.add(new Question("Combien y a-t-il de planètes dans le système solaire ?", 0, "7", "8", "9", "10", "8"));
-        questions.add(new Question("Combien de couleurs dans l’arc-en-ciel ?", 0, "6", "7", "8", "5", "7"));
+        questions.add(new Question("Combien de cœurs a une pieuvre ?", R.drawable.pieuvre, "1", "2", "3", "8", "3"));
+        questions.add(new Question("Que signifie 'karaoké' en japonais ?", R.drawable.karaoke, "Chanter mal", "Orchestre vide", "Danse en duo", "Boisson sucrée", "Orchestre vide"));
+        questions.add(new Question("Quelle est la capitale de ce pays ?", R.drawable.canada, "Toronto", "Vancouver", "Ottawa", "Montréal", "Ottawa"));
+        questions.add(new Question("Qui a peint La Joconde ?", R.drawable.jocande, "Picasso", "Michel-Ange", "Léonard de Vinci", "Van Gogh", "Léonard de Vinci"));
+        questions.add(new Question("Combien y a-t-il de planètes dans le système solaire ?", R.drawable.system_solaire, "7", "8", "9", "10", "8"));
+        questions.add(new Question("Combien de championnats du monde de Formule 1 Lewis Hamilton a-t-il gagnés ?", R.drawable.hamilton, "6", "7", "8", "5", "7"));
+        questions.add(new Question( "Laquelle de ces affirmations sur ce chanteur est vraie ?", R.drawable.cardib,"Elle a joué dans le film Hustlers", "Elle a lancé une marque de parfums appelée CardEssence", "Elle a été juge dans The Voice USA pendant deux saisons", "Elle a remporté un Oscar pour une chanson originale", "Elle a joué dans le film Hustlers"));
+        questions.add(new Question( "Dans quelle équipe joue Travis Kelce ?", R.drawable.travis_kelce,"Dallas Cowboys", "Green Bay Packers", "New York Giants", "Kansas City Chiefs", "Kansas City Chiefs"));
+        questions.add(new Question( "Lequel de ces films met en vedette cet acteur",R.drawable.michael_b_jordan, "Silent Horizon", "Creed", "Shadow Protocol", "Crimson District", "Creed"));
+        questions.add(new Question( "Contre quelle équipe Declan Rice a-t-il joué lors de son dernier match avec son pays", R.drawable.declan_rice,"Allemagne", "Finlande", "Italie", "Portugal", "Finlande"));
+        questions.add(new Question( "Laquelle de ces chansons appartient à ce chanteur?", R.drawable.roddy_ricch,"No Love Tonight", "Diamonds in the Rain", "Money Flow", "The Box", "The Box"));
         Collections.shuffle(questions);
     }
 
@@ -104,7 +109,7 @@ public class QuizChoixActivity extends AppCompatActivity {
         timer = new CountDownTimer(millis, 1000) {
             public void onTick(long millisUntilFinished) {
                 timeLeftMillis = millisUntilFinished;
-                tvTimer.setText(millisUntilFinished / 1000 + "s");
+                tvTimer.setText("Temps restant : " + (millisUntilFinished / 1000 + "s"));
             }
 
             public void onFinish() {
@@ -166,6 +171,10 @@ public class QuizChoixActivity extends AppCompatActivity {
         if (timer != null) timer.cancel();
         tvQuestion.setText("Fin du jeu !");
         tvTimer.setText("0s");
+        // ✅ Ajouter au score total
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        int previousScore = prefs.getInt("totalScore", 0);
+        prefs.edit().putInt("totalScore", previousScore + score).apply();
         imageViewQuestion.setVisibility(View.GONE);
         btnA.setEnabled(false);
         btnB.setEnabled(false);

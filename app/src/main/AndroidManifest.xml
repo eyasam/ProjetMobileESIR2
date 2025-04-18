@@ -30,13 +30,20 @@
         <activity android:name=".Defis.QuizChoixActivity" />
         <activity android:name=".Defis.ShakeActivity" />
         <activity android:name=".Defis.DefiDevineMotActivity" />
+        <activity android:name=".Defis.CutTheDotsActivity"/>
+        <activity android:name=".Defis.SnakeDefiActivity"/>
 
         <activity android:name=".MainActivity" />
         <activity android:name=".Modes.SoloGameActivity" />
         <activity android:name=".Modes.MultiplayerGameActivity" />
         <activity android:name=".Modes.TrainingActivity" />
 
+        <activity android:name=".SelectionDefiActivity"/>
+        <activity android:name=".FinPartieActivity"/>
+        <activity android:name=".SplashFinActivity"/>
+
         <activity android:name=".Modes.ResultatsActivity" />
+
 
 
         <activity

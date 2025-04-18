@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
                             // Mode Solo
-                            Intent soloIntent = new Intent(MainActivity.this, SoloGameActivity.class);
+                            Intent soloIntent = new Intent(MainActivity.this, SelectionDefiActivity.class);
                             startActivity(soloIntent);
                         } else {
                             // Mode Multijoueur

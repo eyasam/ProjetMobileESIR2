@@ -1,0 +1,19 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Fond coloré -->
+    <solid android:color="@color/color13"/>
+
+    <!-- Coins arrondis -->
+
+
+    <!-- Ombre (optionnelle) -->
+    <gradient
+        android:startColor="@android:color/transparent"
+        android:endColor="@color/color11"
+        android:angle="90"/>
+
+    <!-- Padding intérieur -->
+    <padding android:left="16dp" android:top="16dp"
+        android:right="16dp" android:bottom="16dp"/>
+</shape>
