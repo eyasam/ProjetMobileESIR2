@@ -17,12 +17,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
 import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
+import com.example.projetmobileesir2.ScoreDialogFragment;
 
 import java.util.Random;
 
 public class GyroscopeActivity extends AppCompatActivity {
 
-    private static final int DUREE_JEU = 60000;
+    private static final int DUREE_JEU = 30000;
     private static final int MARGE = 10;
 
     private SensorManager sensorManager;
@@ -44,6 +45,7 @@ public class GyroscopeActivity extends AppCompatActivity {
 
     private long pauseTime = 0;
     private boolean isPaused = false;
+    private  String mode;
 
     private final SensorEventListener sensorListener = new SensorEventListener() {
         @Override
@@ -91,6 +93,8 @@ public class GyroscopeActivity extends AppCompatActivity {
 
         initViews();
         initSensor();
+
+        mode = getIntent().getStringExtra("mode");
 
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         isHost = getIntent().getBooleanExtra("isHost", false);
@@ -193,19 +197,32 @@ public class GyroscopeActivity extends AppCompatActivity {
     private void endChallenge() {
         challengeRunning = false;
         unregisterSensor();
-        resultView.setText("Défi terminé ! Score : " + score);
+        //resultView.setText("Défi terminé ! Score : " + score);
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        int previousScore = prefs.getInt("totalScore", 0);
+        prefs.edit().putInt("totalScore", previousScore + score).apply();
+
         playSound(R.raw.victory);
     }
 
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
+            finish();
         } else {
-            Intent intent = new Intent(this, ResultatsActivity.class);
+            //Ancien code
+            /*Intent intent = new Intent(this, ResultatsActivity.class);
             intent.putExtra("scoreLocal", score);
             startActivity(intent);
+
+             */
+
+            // Affichage du ScoreDialogFragment
+            ScoreDialogFragment.newInstance(score, mode)
+                    .show(getSupportFragmentManager(), "score_dialog");
+
         }
-        finish();
+
     }
 
     private void playSound(int resId) {

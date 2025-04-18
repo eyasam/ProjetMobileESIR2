@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.media.MediaPlayer;
 
-import androidx.appcompat.app.AlertDialog;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projetmobileesir2.Modes.TrainingActivity;
@@ -23,6 +23,8 @@ public class SnakeDefiActivity extends AppCompatActivity {
     private SnakeView snakeView;
     private TextView timeLeftText;
     private String mode;
+
+
     private int finalScore;
 
     @Override

@@ -4,6 +4,7 @@ import android.content.*;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.*;
@@ -14,6 +15,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
 import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
+import com.example.projetmobileesir2.ScoreDialogFragment;
+import com.example.projetmobileesir2.SelectionDefiActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,8 +172,8 @@ public class QuizChoixActivity extends AppCompatActivity {
     private void endGame() {
         gameOver = true;
         if (timer != null) timer.cancel();
-        tvQuestion.setText("Fin du jeu !");
-        tvTimer.setText("0s");
+        //tvQuestion.setText("Fin du jeu !");
+        //tvTimer.setText("0s");
         // ✅ Ajouter au score total
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int previousScore = prefs.getInt("totalScore", 0);
@@ -193,12 +196,18 @@ public class QuizChoixActivity extends AppCompatActivity {
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
+            finish();
         } else {
-            Intent intent = new Intent(this, ResultatsActivity.class);
+            /*Intent intent = new Intent(this, ResultatsActivity.class);
             intent.putExtra("scoreLocal", score);
             startActivity(intent);
+
+             */
+            ScoreDialogFragment.newInstance(score, mode)
+                    .show(getSupportFragmentManager(), "scoreDialog");
+
         }
-        finish();
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.projetmobileesir2.Defis;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.*;
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
 import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
+import com.example.projetmobileesir2.ScoreDialogFragment;
 
 import java.util.List;
 
@@ -26,6 +28,9 @@ public class DefiDevineMotActivity extends AppCompatActivity {
     private long totalTimeMillis = 20000;
     private long timeLeftMillis = totalTimeMillis;
     private long timerStartedAt = 0;
+
+    private boolean isGameEnded = false;
+    private  String mode;
 
     private CountDownTimer timer;
 
@@ -49,6 +54,8 @@ public class DefiDevineMotActivity extends AppCompatActivity {
         btnValider = findViewById(R.id.btnValider);
 
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+
+        mode = getIntent().getStringExtra("mode");
 
         afficherEnigme();
 
@@ -100,21 +107,32 @@ public class DefiDevineMotActivity extends AppCompatActivity {
     private void terminerPartie() {
         partieTerminee = true;
         if (timer != null) timer.cancel();
-        tvEnigme.setText("Partie terminée !");
-        tvScore.setText("Score final : " + score);
-        tvTimer.setText("0s");
+        //tvEnigme.setText("Partie terminée !");
+        //tvScore.setText("Score final : " + score);
+        //tvTimer.setText("0s");
+
+        SharedPreferences totalPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        int previousScore = totalPrefs.getInt("totalScore", 0);
+        totalPrefs.edit().putInt("totalScore", previousScore + score).apply(); // Utiliser 'score' ici
+
         etReponse.setEnabled(false);
         btnValider.setEnabled(false);
 
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
+            finish();
         } else {
-            Intent intent = new Intent(this, ResultatsActivity.class);
+            /*Intent intent = new Intent(this, ResultatsActivity.class);
             intent.putExtra("scoreLocal", score);
             startActivity(intent);
+
+             */
+            ScoreDialogFragment.newInstance(score, mode)
+                    .show(getSupportFragmentManager(), "scoreDialog");
+
         }
 
-        finish();
+
     }
 
     @Override

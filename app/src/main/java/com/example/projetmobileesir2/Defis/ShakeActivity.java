@@ -14,6 +14,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
 import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
+import com.example.projetmobileesir2.ScoreDialogFragment;
 
 public class ShakeActivity extends AppCompatActivity {
 
@@ -37,6 +38,8 @@ public class ShakeActivity extends AppCompatActivity {
     private long timerStartedAt = 0;
     private long pauseTime = 0;
     private boolean isPaused = false;
+
+    private  String mode;
 
     private final SensorEventListener shakeListener = new SensorEventListener() {
         @Override
@@ -93,6 +96,8 @@ public class ShakeActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timerText);
         resultText = findViewById(R.id.resultText);
 
+        mode = getIntent().getStringExtra("mode");
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -142,28 +147,52 @@ public class ShakeActivity extends AppCompatActivity {
             public void onFinish() {
                 challengeRunning = false;
                 unregisterSensor();
-                timerText.setText("Temps : 0s");
-                resultText.setText("Défi terminé !\nScore final : " + shakeCount);
+                //timerText.setText("Temps : 0s");
+                //resultText.setText("Défi terminé !\nScore final : " + shakeCount);
+
+                SharedPreferences totalPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                int previousScore = totalPrefs.getInt("totalScore", 0);
+                totalPrefs.edit().putInt("totalScore", previousScore + shakeCount).apply();
+
                 finishDefi();
             }
         }.start();
     }
 
     private void vibrate() {
-        if (vibrator != null && vibrator.hasVibrator()) {
+        /*if (vibrator != null && vibrator.hasVibrator()) {
             vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
         }
+
+         */
+
+        if (vibrator != null && vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                vibrator.vibrate(500);
+            }
+        }
+
+
     }
 
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(shakeCount);
+            finish();
         } else {
-            Intent intent = new Intent(this, ResultatsActivity.class);
+            /*Intent intent = new Intent(this, ResultatsActivity.class);
             intent.putExtra("scoreLocal", shakeCount);
             startActivity(intent);
+
+             */
+
+            ScoreDialogFragment dialog = ScoreDialogFragment.newInstance(shakeCount,mode);
+            dialog.show(getSupportFragmentManager(), "ScoreDialog");
+
         }
-        finish();
+
     }
 
     @Override

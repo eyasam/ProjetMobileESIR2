@@ -121,7 +121,8 @@ public class SelectionDefiActivity extends AppCompatActivity {
             }
 
             if (intent != null) {
-                intent.putExtra("mode", "jouer");
+                intent.putExtra("mode", "jouer");            // mode "jouer"
+                intent.putExtra("isMultiplayer", false);     // et c'est SOLO ici
 
                 // Enregistrer le défi joué
                 SharedPreferences.Editor editor = prefs.edit();
@@ -134,6 +135,7 @@ public class SelectionDefiActivity extends AppCompatActivity {
 
                 startActivity(intent);
             }
+
         });
     }
 

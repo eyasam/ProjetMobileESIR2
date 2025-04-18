@@ -57,8 +57,10 @@ public class ScoreDialogFragment extends DialogFragment {
                     Intent intent;
                     if ("entrainement".equals(mode)) {
                         intent = new Intent(context, TrainingActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     } else {
                         intent = new Intent(context, SelectionDefiActivity.class);
+
                     }
                     context.startActivity(intent);
                     requireActivity().finish();  // Fermer l'activité du défi en cours
