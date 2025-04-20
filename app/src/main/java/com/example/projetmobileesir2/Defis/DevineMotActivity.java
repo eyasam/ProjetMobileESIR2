@@ -1,6 +1,5 @@
 package com.example.projetmobileesir2.Defis;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -9,13 +8,12 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
-import com.example.projetmobileesir2.Modes.ResultatsActivity;
 import com.example.projetmobileesir2.R;
 import com.example.projetmobileesir2.ScoreDialogFragment;
 
 import java.util.List;
 
-public class DefiDevineMotActivity extends AppCompatActivity {
+public class DevineMotActivity extends AppCompatActivity {
 
     private TextView tvTimer, tvScore, tvEnigme;
     private EditText etReponse;

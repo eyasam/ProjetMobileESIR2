@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetmobileesir2.Defis.QuizChoixActivity;
-import com.example.projetmobileesir2.Defis.DefiDevineMotActivity;
+import com.example.projetmobileesir2.Defis.DevineMotActivity;
 import com.example.projetmobileesir2.R;
 
 import java.util.Random;
@@ -41,7 +41,7 @@ public class ResultatIntermediaireActivity extends AppCompatActivity {
         if (new Random().nextBoolean()) {
             intent = new Intent(this, QuizChoixActivity.class);
         } else {
-            intent = new Intent(this, DefiDevineMotActivity.class);
+            intent = new Intent(this, DevineMotActivity.class);
         }
 
         intent.putExtra("scoreDefi1", scoreDefi1);

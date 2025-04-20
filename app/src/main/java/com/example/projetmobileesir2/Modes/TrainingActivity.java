@@ -10,12 +10,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projetmobileesir2.Defis.CutTheDotsActivity;
 import com.example.projetmobileesir2.Defis.ShakeActivity;
-import com.example.projetmobileesir2.Defis.DefiDevineMotActivity;
+import com.example.projetmobileesir2.Defis.DevineMotActivity;
 
 import com.example.projetmobileesir2.Defis.GyroscopeActivity;
 import com.example.projetmobileesir2.Defis.QuizChoixActivity;
 
-import com.example.projetmobileesir2.Defis.SnakeDefiActivity;
+import com.example.projetmobileesir2.Defis.SnakeActivity;
 import com.example.projetmobileesir2.R;
 
 import java.util.Arrays;
@@ -69,10 +69,10 @@ public class TrainingActivity extends AppCompatActivity {
                     intent = new Intent(this, QuizChoixActivity.class);
                     break;
                 case "Défi Mot":
-                    intent = new Intent(this, DefiDevineMotActivity.class);
+                    intent = new Intent(this, DevineMotActivity.class);
                     break;
                 case "Défi Snake":
-                    intent = new Intent(this, SnakeDefiActivity.class);
+                    intent = new Intent(this, SnakeActivity.class);
                     break;
                 case "Défi Fruit":
                     intent = new Intent(this, CutTheDotsActivity.class);

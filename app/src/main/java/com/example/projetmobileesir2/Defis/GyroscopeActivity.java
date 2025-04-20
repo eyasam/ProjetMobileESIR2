@@ -23,7 +23,7 @@ import java.util.Random;
 
 public class GyroscopeActivity extends AppCompatActivity {
 
-    private static final int DUREE_JEU = 30000;
+    private static final int DUREE_JEU = 10000;
     private static final int MARGE = 10;
 
     private SensorManager sensorManager;

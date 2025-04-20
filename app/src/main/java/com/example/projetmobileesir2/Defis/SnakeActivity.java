@@ -1,12 +1,12 @@
 package com.example.projetmobileesir2.Defis;
 
-import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.media.MediaPlayer;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,38 +14,44 @@ import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
 import com.example.projetmobileesir2.R;
 import com.example.projetmobileesir2.ScoreDialogFragment;
 
-public class CutTheDotsActivity extends AppCompatActivity {
+import android.content.SharedPreferences;
+public class SnakeActivity extends AppCompatActivity {
 
-    private TextView scoreText, timerText;
-    private CutTheDotsView gameView;
-    private int score = 0;
+    private TextView scoreText, timeLeftText;
+    private FrameLayout container;
+    private SnakeView snakeView;
     private String mode;
-    private MediaPlayer bgMusic;
-    private CountDownTimer timer;
+    private int finalScore = 0;
 
     private boolean isMultiplayer;
     private long timeLeftMillis = 30000;
+    private long timerStartedAt;
     private long pauseTime = 0;
     private boolean isPaused = false;
-    private long timerStartedAt;
+    private CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cut_the_dots);
+        setContentView(R.layout.activity_snake_defi);
 
         scoreText = findViewById(R.id.scoreText);
-        timerText = findViewById(R.id.timerText);
+        timeLeftText = findViewById(R.id.timeLeftText);
+        container = findViewById(R.id.snake_game_container);
+
         mode = getIntent().getStringExtra("mode");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
 
-        bgMusic = MediaPlayer.create(this, R.raw.fruit_ninja);
-        bgMusic.setLooping(true);
-        bgMusic.start();
+        snakeView = new SnakeView(this, scoreText);
+        snakeView.setTimeLeftText(timeLeftText);
+        container.addView(snakeView);
 
-        FrameLayout gameContainer = findViewById(R.id.cut_game_container);
-        gameView = new CutTheDotsView(this, null, scoreText);
-        gameContainer.addView(gameView);
+        snakeView.setOnGameOverListener(score -> {
+            finalScore = score;
+            addScoreToTotal(score);
+            playVictorySound();
+            showScorePopup();
+        });
 
         startTimer(timeLeftMillis);
     }
@@ -56,47 +62,41 @@ public class CutTheDotsActivity extends AppCompatActivity {
         timer = new CountDownTimer(millis, 1000) {
             public void onTick(long millisUntilFinished) {
                 timeLeftMillis = millisUntilFinished;
-                timerText.setText("Temps: " + millisUntilFinished / 1000 + "s");
+                timeLeftText.setText("Temps: " + millisUntilFinished / 1000 + "s");
             }
 
             public void onFinish() {
-                gameView.endGame();
-                score = gameView.getScore();
-                addScoreToTotal();
-                playVictorySound();
-                showScorePopup();
+                timeLeftMillis = 0;
+                snakeView.restartGame(); // en cas de besoin
             }
         }.start();
     }
 
-    private void addScoreToTotal() {
-        int currentScore = getSharedPreferences("MyPrefs", MODE_PRIVATE).getInt("totalScore", 0);
-        int newScore = currentScore + score;
-        getSharedPreferences("MyPrefs", MODE_PRIVATE).edit().putInt("totalScore", newScore).apply();
-    }
-
     private void showScorePopup() {
         if (isMultiplayer) {
-            MultiplayerGameActivity.saveLocalScore(score);
+            MultiplayerGameActivity.saveLocalScore(finalScore);
             finish();
         } else {
-            ScoreDialogFragment.newInstance(score, mode)
+            ScoreDialogFragment.newInstance(finalScore, mode)
                     .show(getSupportFragmentManager(), "scoreDialog");
         }
     }
 
+    private void addScoreToTotal(int score) {
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        int totalScore = prefs.getInt("totalScore", 0);
+        prefs.edit().putInt("totalScore", totalScore + score).apply();
+    }
+
     private void playVictorySound() {
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.victory);
-        mediaPlayer.start();
-        mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+        MediaPlayer mp = MediaPlayer.create(this, R.raw.victory);
+        mp.start();
+        mp.setOnCompletionListener(MediaPlayer::release);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (bgMusic != null && bgMusic.isPlaying()) {
-            bgMusic.pause();
-        }
         if (timer != null) {
             timer.cancel();
             pauseTime = SystemClock.elapsedRealtime();
@@ -107,24 +107,11 @@ public class CutTheDotsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (bgMusic != null && !bgMusic.isPlaying()) {
-            bgMusic.start();
-        }
         if (isPaused) {
             long delta = SystemClock.elapsedRealtime() - pauseTime;
             timeLeftMillis = Math.max(0, timeLeftMillis - delta);
             isPaused = false;
             startTimer(timeLeftMillis);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (bgMusic != null) {
-            bgMusic.release();
-            bgMusic = null;
-        }
-        if (timer != null) timer.cancel();
     }
 }
