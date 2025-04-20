@@ -90,9 +90,9 @@ public class SelectionDefiActivity extends AppCompatActivity {
         });
 
         // --- 1. Groupes par catégorie ---
-        List<String> defisCapteur = Arrays.asList("Défi Secouer", "Défi Gyroscope");
-        List<String> defisTactile = Arrays.asList("Défi Snake", "Défi Fruit");
-        List<String> defisQuestion = Arrays.asList("Défi Quizz", "Défi Mot");
+        List<String> defisCapteur = Arrays.asList("Shake It Up!", "Target Spin");
+        List<String> defisTactile = Arrays.asList("Snake", "Slice Dash");
+        List<String> defisQuestion = Arrays.asList("Guess It Right", "Mind Maze");
 
         // --- 2. Sélectionner un défi aléatoire par catégorie ---
         String defiCapteur = defisCapteur.get((int)(Math.random() * defisCapteur.size()));
@@ -117,22 +117,22 @@ public class SelectionDefiActivity extends AppCompatActivity {
             // Lancement de l'activité correspondante au défi sélectionné.
             Intent intent = null;
             switch (selectedDefi) {
-                case "Défi Secouer":
+                case "Shake It Up!":
                     intent = new Intent(this, ShakeActivity.class);
                     break;
-                case "Défi Gyroscope":
+                case "Target Spin":
                     intent = new Intent(this, GyroscopeActivity.class);
                     break;
-                case "Défi Quizz":
+                case "Guess It Right":
                     intent = new Intent(this, QuizChoixActivity.class);
                     break;
-                case "Défi Mot":
+                case "Mind Maze":
                     intent = new Intent(this, DevineMotActivity.class);
                     break;
-                case "Défi Snake":
+                case "Snake":
                     intent = new Intent(this, SnakeActivity.class);
                     break;
-                case "Défi Fruit":
+                case "Slice Dash":
                     intent = new Intent(this, CutTheFruitActivity.class);
                     break;
             }

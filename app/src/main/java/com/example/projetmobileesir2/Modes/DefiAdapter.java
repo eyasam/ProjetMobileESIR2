@@ -81,22 +81,22 @@ public class DefiAdapter extends BaseAdapter {
 
 
         switch (defi) {
-            case "Défi Secouer":
+            case "Shake It Up!":
                 iconImageView.setImageResource(R.drawable.ic_shake); // Mets une icône qui existe
                 break;
-            case "Défi Gyroscope":
+            case "Target Spin":
                 iconImageView.setImageResource(R.drawable.ic_gyroscope);
                 break;
-            case "Défi Quizz":
+            case "Guess It Right":
                 iconImageView.setImageResource(R.drawable.ic_guess);
                 break;
-            case "Défi Mot":
+            case "Mind Maze":
                 iconImageView.setImageResource(R.drawable.ic_enigme);
                 break;
-            case "Défi Snake":
+            case "Snake":
                 iconImageView.setImageResource(R.drawable.ic_snake);
                 break;
-            case "Défi Fruit":
+            case "Slice Dash":
                 iconImageView.setImageResource(R.drawable.ic_fruit);
                 break;
             default:

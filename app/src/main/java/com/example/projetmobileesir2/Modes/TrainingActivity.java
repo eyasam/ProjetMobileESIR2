@@ -26,12 +26,12 @@ public class TrainingActivity extends AppCompatActivity {
     private GridView trainingGrid;
 
     private static final List<String> ALL_DEFIS = Arrays.asList(
-            "Défi Secouer",
-            "Défi Gyroscope",
-            "Défi Quizz",
-            "Défi Mot",
-            "Défi Snake",
-            "Défi Fruit"
+            "Shake It Up!",
+            "Target Spin",
+            "Guess It Right",
+            "Mind Maze",
+            "Snake",
+            "Slice Dash"
     );
 
     /**
@@ -64,22 +64,22 @@ public class TrainingActivity extends AppCompatActivity {
             Intent intent = null;
 
             switch (selectedDefi) {
-                case "Défi Secouer":
+                case "Shake It Up!":
                     intent = new Intent(this, ShakeActivity.class);
                     break;
-                case "Défi Gyroscope":
+                case "Target Spin":
                     intent = new Intent(this, GyroscopeActivity.class);
                     break;
-                case "Défi Quizz":
+                case "Guess It Right":
                     intent = new Intent(this, QuizChoixActivity.class);
                     break;
-                case "Défi Mot":
+                case "Mind Maze":
                     intent = new Intent(this, DevineMotActivity.class);
                     break;
-                case "Défi Snake":
+                case "Snake":
                     intent = new Intent(this, SnakeActivity.class);
                     break;
-                case "Défi Fruit":
+                case "Slice Dash":
                     intent = new Intent(this, CutTheFruitActivity.class);
                     break;
             }

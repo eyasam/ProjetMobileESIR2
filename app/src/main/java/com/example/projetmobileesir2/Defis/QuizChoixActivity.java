@@ -35,7 +35,7 @@ public class QuizChoixActivity extends AppCompatActivity {
     private boolean isMultiplayer, isHost;
 
     private CountDownTimer timer;
-    private long timeLeftMillis = 10000;
+    private long timeLeftMillis = 20000;
     private long timerStartedAt = 0;
     private long pauseTime = 0;
     private boolean isPaused = false;
