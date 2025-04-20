@@ -9,6 +9,11 @@ public class SplashActivity extends AppCompatActivity {
 
     private static int SPLASH_TIME_OUT = 3500; // 3 secondes
 
+    /**
+     * Méthode appelée lors de la création de l'activité.
+     * Cette méthode sert à afficher l'écran de démarrage (Splash Screen) pendant un certain temps
+     * avant de rediriger automatiquement vers la `MainActivity`.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

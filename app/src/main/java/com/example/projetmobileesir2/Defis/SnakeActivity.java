@@ -30,6 +30,14 @@ public class SnakeActivity extends AppCompatActivity {
     private boolean isPaused = false;
     private CountDownTimer timer;
 
+    /**
+     * Charge le layout XML
+     * Récupération des vues à partir du layout
+     * Récupère les données envoyées via l'intent
+     * Instancie la vue Snake, lui passe la référence vers le TextView score
+     * Quand le jeu se termine (collision ou temps écoulé), cette callback est déclenchée avec le setOnGameOverListener
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,20 +51,20 @@ public class SnakeActivity extends AppCompatActivity {
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
 
         snakeView = new SnakeView(this, scoreText);
-        snakeView.setTimeLeftText(timeLeftText);
-        container.addView(snakeView);
+        snakeView.setTimeLeftText(timeLeftText);// Lie le TextView du timer
+        container.addView(snakeView); // Ajoute le SnakeView au conteneur
 
         snakeView.setOnGameOverListener(score -> {
             finalScore = score;
-            addScoreToTotal(score);
-            playVictorySound();
-            showScorePopup();
+            addScoreToTotal(score); // Ajoute le score au total sauvegardé
+            playVictorySound(); // Joue un son de victoire
+            showScorePopup(); // Affiche un popup avec le score
         });
 
-        startTimer(timeLeftMillis);
+        //startTimer(timeLeftMillis);
     }
 
-    private void startTimer(long millis) {
+    /*private void startTimer(long millis) {
         timerStartedAt = SystemClock.elapsedRealtime();
 
         timer = new CountDownTimer(millis, 1000) {
@@ -72,6 +80,13 @@ public class SnakeActivity extends AppCompatActivity {
         }.start();
     }
 
+
+     */
+
+    /**
+     * Affichage du popup de score en mode solo ou entrainement, ou envoie le score au gestionnaire multijoueur (eregistrer localement)
+     * et on ferme l'activité
+     */
     private void showScorePopup() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(finalScore);
@@ -82,18 +97,29 @@ public class SnakeActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Màj du score total stocké localement dans les sharedPreferences pour calculer le score total pour le mode solo
+     * @param score
+     */
     private void addScoreToTotal(int score) {
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int totalScore = prefs.getInt("totalScore", 0);
         prefs.edit().putInt("totalScore", totalScore + score).apply();
     }
 
+    /**
+     * Joue un son de victoire à la fin de la partie
+     */
     private void playVictorySound() {
         MediaPlayer mp = MediaPlayer.create(this, R.raw.victory);
         mp.start();
         mp.setOnCompletionListener(MediaPlayer::release);
     }
 
+    /**
+     * Gère la mise en pause de l’activité
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -104,6 +130,9 @@ public class SnakeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gère la reprise de l’activité après une pause
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -111,7 +140,7 @@ public class SnakeActivity extends AppCompatActivity {
             long delta = SystemClock.elapsedRealtime() - pauseTime;
             timeLeftMillis = Math.max(0, timeLeftMillis - delta);
             isPaused = false;
-            startTimer(timeLeftMillis);
+            //startTimer(timeLeftMillis);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.projetmobileesir2.Defis;
 
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.*;
@@ -28,10 +29,11 @@ public class DevineMotActivity extends AppCompatActivity {
     private long timerStartedAt = 0;
 
     private boolean isGameEnded = false;
-    private  String mode;
+    private  String mode; //utiliser pour identifier quel mode de jeu on est solo ou entrainement
 
     private CountDownTimer timer;
 
+    // === Liste fixe des énigmes à deviner ===
     private final List<MotIndice> questions = List.of(
             new MotIndice("Je suis jaune, courbé, et on me mange", "banane"),
             new MotIndice("Je brille la nuit dans le ciel", "lune"),
@@ -45,16 +47,18 @@ public class DevineMotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deviner_le_mot);
 
+        // Initialisation des vues
         tvTimer = findViewById(R.id.tvTimer);
         tvScore = findViewById(R.id.tvScore);
         tvEnigme = findViewById(R.id.tvEnigme);
         etReponse = findViewById(R.id.etRéponse);
         btnValider = findViewById(R.id.btnValider);
-
+        // Vérifie si on est en mode multijoueur
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
 
         mode = getIntent().getStringExtra("mode");
 
+        // Affiche la première énigme
         afficherEnigme();
 
         btnValider.setOnClickListener(v -> {
@@ -66,6 +70,8 @@ public class DevineMotActivity extends AppCompatActivity {
             if (correct) {
                 score++;
                 tvScore.setText("Score : " + score);
+
+                // Passe à l’énigme suivante s’il en reste, sinon fin de partie
                 if (++currentIndex < questions.size()) {
                     afficherEnigme();
                 } else {
@@ -73,18 +79,28 @@ public class DevineMotActivity extends AppCompatActivity {
                 }
             }
 
+            // Réinitialise l'input + effet de couleur (vert si bon, rouge sinon)
             etReponse.setText("");
             int color = getResources().getColor(correct ? android.R.color.holo_green_light : android.R.color.holo_red_light);
             etReponse.setBackgroundColor(color);
+
+            // Efface la couleur après 600ms
             etReponse.postDelayed(() ->
                     etReponse.setBackgroundColor(getResources().getColor(android.R.color.transparent)), 600);
         });
     }
 
+    /**
+     * Cette méthode affiche l’énigme actuelle à partir de l’index courant.
+     */
     private void afficherEnigme() {
         tvEnigme.setText("Indice : " + questions.get(currentIndex).indice);
     }
 
+    /**
+     * Démarre un compte à rebours visuel et logique.
+     * Màj l’affichage chaque seconde.
+     */
     private void startTimer(long millis) {
         timerStartedAt = System.currentTimeMillis();
         timer = new CountDownTimer(millis, 1000) {
@@ -102,6 +118,14 @@ public class DevineMotActivity extends AppCompatActivity {
         timer.start();
     }
 
+    /**
+     * Cette méthode est appelée quand la partie est terminée :
+     * - Arrête le timer
+     * - Enregistre le score
+     * - Désactive les interactions
+     * - Lance la suite selon le mode de jeu
+     */
+
     private void terminerPartie() {
         partieTerminee = true;
         if (timer != null) timer.cancel();
@@ -109,13 +133,17 @@ public class DevineMotActivity extends AppCompatActivity {
         //tvScore.setText("Score final : " + score);
         //tvTimer.setText("0s");
 
+        // Ajoute le score à la mémoire locale
         SharedPreferences totalPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int previousScore = totalPrefs.getInt("totalScore", 0);
         totalPrefs.edit().putInt("totalScore", previousScore + score).apply(); // Utiliser 'score' ici
 
+        playSound(R.raw.victory);
+
         etReponse.setEnabled(false);
         btnValider.setEnabled(false);
 
+        // Multijoueur : on revient à la partie principale avec le score
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
             finish();
@@ -125,14 +153,28 @@ public class DevineMotActivity extends AppCompatActivity {
             startActivity(intent);
 
              */
+            // Mode solo ou entrainement : on affiche une boîte de score
             ScoreDialogFragment.newInstance(score, mode)
                     .show(getSupportFragmentManager(), "scoreDialog");
 
         }
 
-
     }
 
+    /**
+     * Cette méthode pour jouer un son de victoire .
+     * Le MediaPlayer est libéré à la fin du son.
+     */
+    private void playSound(int resId) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, resId);
+        mediaPlayer.start();
+        mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+    }
+
+
+    /**
+     * Quand l’activité reprend , relance le timer si nécessaire.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -141,6 +183,10 @@ public class DevineMotActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * À la mise en pause, le timer s'arrête.
+     * On calcule combien de temps s’est écoulé pour le reprendre plus tard.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -151,6 +197,11 @@ public class DevineMotActivity extends AppCompatActivity {
             timeLeftMillis = Math.max(0, timeLeftMillis - elapsed);
         }
     }
+
+    /**
+     * Petite classe interne pour représenter une énigme :
+     * une phrase ("indice") et sa réponse attendue.
+     */
 
     static class MotIndice {
         final String indice, reponse;

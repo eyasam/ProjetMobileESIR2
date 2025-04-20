@@ -19,7 +19,7 @@ public class SnakeView extends View implements Runnable {
 
     private List<Point> snake = new ArrayList<>();
     private Point food = new Point();
-    private int direction = 1;
+    private int direction = 1; // 0 = Haut, 1 = Droite, 2 = Bas, 3 = Gauche
     private int cellSize = 30;
     private Paint snakePaint, foodPaint, textPaint;
     private TextView scoreText;
@@ -41,14 +41,20 @@ public class SnakeView extends View implements Runnable {
     public SnakeView(Context context, TextView scoreText) {
         super(context);
         this.scoreText = scoreText;
-        init();
+        init(); // Initialiser le jeu
     }
 
-    // Méthode pour définir le listener
+    // Méthode pour définir le listener de fin de jeu
     public void setOnGameOverListener(OnGameOverListener listener) {
         this.onGameOverListener = listener;
     }
 
+    /**
+     * Initialisation des jeu
+     * Réinitialisation le serpent à une position de départ aléatoire
+     * Création un paint pour dessiner le serpent, la nourriture et le texte
+     * Initialisation le score et l'affichage
+     */
     private void init() {
         // Réinitialiser le serpent à une position de départ aléatoire
         snake.clear();
@@ -73,6 +79,10 @@ public class SnakeView extends View implements Runnable {
         postDelayed(this, 300);
     }
 
+    /**
+     * Méthode pour faire apparaître de la nourriture à une position aléatoire
+     *
+     */
     private void spawnFood() {
         int cols = getWidth() / cellSize;
         int rows = getHeight() / cellSize;
@@ -84,15 +94,24 @@ public class SnakeView extends View implements Runnable {
         food.set(rand.nextInt(cols - 2) + 1, rand.nextInt(rows - 2) + 1);
     }
 
+    /**
+     * Méthode pour définir le TextView pour afficher le temps restant
+     * @param timeLeftText
+     */
     public void setTimeLeftText(TextView timeLeftText) {
         this.timeLeftText = timeLeftText;
     }
 
+    /**
+     * Méthode pour dessiner le serpent, la nourriture et le texte sur le canvas
+     * Si le jeu est terminé, on arrête le dessin du serpent et de la nourriture
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Si le jeu est terminé, on affiche le message
+
         if (isGameOver) {
             //canvas.drawText("Partie Terminée", getWidth() / 4, getHeight() / 2 - 100, textPaint);
             //canvas.drawText("Score Final: " + score, getWidth() / 4, getHeight() / 2, textPaint);
@@ -123,8 +142,15 @@ public class SnakeView extends View implements Runnable {
         if (timeLeftText != null) {
             timeLeftText.setText("Temps restant: " + remainingTime + "s");
         }
+
+
     }
 
+    /**
+     * Méthode pour déplacer le serpent en fonction de la direction
+     * Copie de la tête du serpent
+     * Calcul de la prochaine position de la tête selon la direction
+     */
     private void moveSnake() {
         Point head = new Point(snake.get(0));
         switch (direction) {
@@ -137,7 +163,7 @@ public class SnakeView extends View implements Runnable {
         int maxCols = getWidth() / cellSize;
         int maxRows = getHeight() / cellSize;
 
-        // Collision avec le mur (le jeu ne s'arrête plus ici)
+        // Collision avec le mur
         if (head.x < 0 || head.y < 0 || head.x >= maxCols || head.y >= maxRows) {
             Log.d("SnakeGame", "Collision avec le mur: " + head.toString());
             return;  // Ne fait rien si on touche le mur
@@ -167,6 +193,14 @@ public class SnakeView extends View implements Runnable {
         }
     }
 
+    /**
+     * Méthode pour gérer les événements de déplacements
+     * Récupère la position X du toucher
+     * Récupère la position Y du toucher
+     * Détection du swipe pour changer de direction
+     * @param event
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
@@ -175,8 +209,8 @@ public class SnakeView extends View implements Runnable {
                 touchStartY = event.getY();
                 return true;
             case MotionEvent.ACTION_MOVE:
-                float dx = event.getX() - touchStartX;
-                float dy = event.getY() - touchStartY;
+                float dx = event.getX() - touchStartX;// Calcul du mouvement horizontal
+                float dy = event.getY() - touchStartY; // Calcul du mouvement vertical
 
                 // Seuil pour les déplacements horizontaux et verticaux
                 if (Math.abs(dx) > Math.abs(dy)) {
@@ -187,7 +221,7 @@ public class SnakeView extends View implements Runnable {
                     else if (dy < 0 && direction != 2) direction = 0; // Haut
                 }
 
-                isMoving = true;
+                isMoving = true; // si le serpent est en mouvement
                 touchStartX = event.getX();  // Mise à jour de la position
                 touchStartY = event.getY();
                 return true;
@@ -195,13 +229,18 @@ public class SnakeView extends View implements Runnable {
         return super.onTouchEvent(event);
     }
 
+    /**
+     * Méthode principale pour la boucle de jeu
+     * Si le jeu est terminé, on arrête la boucle
+     * Déplace le serpent
+     */
     @Override
     public void run() {
         if (isGameOver) return;  // Si le jeu est terminé, on arrête tout
 
         if (isMoving) moveSnake();
 
-        // Vérifie si le temps est écoulé (30 secondes par exemple)
+        // Vérifie si le temps est écoulé (30s)
         if ((System.currentTimeMillis() - startTime) / 1000 > 30) {
             isGameOver = true; // Si le temps est écoulé, on termine la partie
             if (onGameOverListener != null) {

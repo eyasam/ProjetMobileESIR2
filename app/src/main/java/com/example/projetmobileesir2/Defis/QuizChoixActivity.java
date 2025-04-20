@@ -44,6 +44,7 @@ public class QuizChoixActivity extends AppCompatActivity {
 
     private  String mode;
 
+    // Récepteur (bluetooth) pour démarrer le quiz en mode multijoueur
     private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -59,6 +60,7 @@ public class QuizChoixActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_choix);
 
+        // Initialisation des vues
         tvScore = findViewById(R.id.tvScore);
         tvTimer = findViewById(R.id.tvTimer);
         tvQuestion = findViewById(R.id.tvQuestion);
@@ -68,13 +70,15 @@ public class QuizChoixActivity extends AppCompatActivity {
         btnC = findViewById(R.id.btnAnswerC);
         btnD = findViewById(R.id.btnAnswerD);
 
+        // Récupération des données
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         isHost = getIntent().getBooleanExtra("isHost", false);
 
         mode = getIntent().getStringExtra("mode");
 
-        initQuestions();
+        initQuestions(); // Préparation des questions
 
+        // Gestion du mode multijoueur
         if (isMultiplayer) {
             LocalBroadcastManager.getInstance(this).registerReceiver(bluetoothReceiver, new IntentFilter("BLUETOOTH_MESSAGE"));
             if (isHost) {
@@ -86,6 +90,7 @@ public class QuizChoixActivity extends AppCompatActivity {
         }
     }
 
+    // Initialise les questions du quiz
     private void initQuestions() {
         questions.add(new Question("Combien de cœurs a une pieuvre ?", R.drawable.pieuvre, "1", "2", "3", "8", "3"));
         questions.add(new Question("Que signifie 'karaoké' en japonais ?", R.drawable.karaoke, "Chanter mal", "Orchestre vide", "Danse en duo", "Boisson sucrée", "Orchestre vide"));
@@ -101,11 +106,13 @@ public class QuizChoixActivity extends AppCompatActivity {
         Collections.shuffle(questions);
     }
 
+    // On démarre le quiz : timer + première question
     private void startQuiz() {
         startTimer(timeLeftMillis);
         showNextQuestion();
     }
 
+    // On lance un compteur pour chaque question
     private void startTimer(long millis) {
         timerStartedAt = SystemClock.elapsedRealtime();
 
@@ -122,6 +129,7 @@ public class QuizChoixActivity extends AppCompatActivity {
         }.start();
     }
 
+    // Affiche la prochaine question à l'écran
     private void showNextQuestion() {
         if (currentQuestionIndex >= questions.size()) {
             endGame();
@@ -149,6 +157,7 @@ public class QuizChoixActivity extends AppCompatActivity {
         setButtonListener(btnD);
     }
 
+    // On attribue l’action à chaque bouton de réponse
     private void setButtonListener(Button btn) {
         btn.setOnClickListener(v -> {
             if (gameOver) return;
@@ -169,6 +178,12 @@ public class QuizChoixActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * On termine le jeu et affiche les résultats
+     * On sauvegarde du score total dans les préférences
+     * Désactivation des boutons et affichage d’un son de fin
+     * Affiche la popup de score ou retourne en multi
+     */
     private void endGame() {
         gameOver = true;
         if (timer != null) timer.cancel();
@@ -187,12 +202,17 @@ public class QuizChoixActivity extends AppCompatActivity {
         finishDefi();
     }
 
+
+    // Pour jouer un son
     private void playSound(int resId) {
         MediaPlayer mediaPlayer = MediaPlayer.create(this, resId);
         mediaPlayer.start();
         mediaPlayer.setOnCompletionListener(MediaPlayer::release);
     }
 
+    /**
+     * Gestion de  la fin du défi selon le mode de jeu
+     */
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
@@ -210,6 +230,9 @@ public class QuizChoixActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * On pause le timer si l'activité est mise en pause
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -220,6 +243,9 @@ public class QuizChoixActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * On reprend le timer lors de la reprise
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -234,6 +260,9 @@ public class QuizChoixActivity extends AppCompatActivity {
         startTimer(timeLeftMillis);
     }
 
+    /**
+     * On nettoie le récepteur Bluetooth à la fermeture
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -243,6 +272,9 @@ public class QuizChoixActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Classe interne représentant une question du quiz
+     */
     static class Question {
         private final String text;
         private final int imageResId;

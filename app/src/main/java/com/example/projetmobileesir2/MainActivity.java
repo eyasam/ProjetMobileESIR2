@@ -21,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer bgMusic, clickSound;
     private boolean isSoundOn = true;
 
+    /**
+     * Cette méthode initialise l'interface utilisateur, configure les sons et les boutons, et gère
+     * les événements lorsque l'utilisateur interagit avec l'écran d'accueil.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,19 +89,27 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    /**
+     * Libère les ressources audio lorsque l'activité est détruite. Cela permet d'éviter les fuites de mémoire.
+     */
+
     @Override
     protected void onDestroy() {
         if (bgMusic != null) {
-            bgMusic.release();
-            bgMusic = null;
+            bgMusic.release(); // Libère la musique de fond
+            bgMusic = null; //mettre la variable à null pour éviter les références
         }
         if (clickSound != null) {
-            clickSound.release();
-            clickSound = null;
+            clickSound.release(); // Libère le son de clic
+            clickSound = null; //mettre la variable à null pour éviter les références
         }
         super.onDestroy();
     }
 
+    /**
+     * Cette méthode est appelée lorsque l'activité est mise en pause (par exemple, si l'utilisateur quitte l'application).
+     * Elle permet de mettre la musique de fond en pause si elle est en cours de lecture.
+     */
 
     @Override
     protected void onPause() {
@@ -106,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
             bgMusic.pause();
         }
     }
+
+    /**
+     * Cette méthode est appelée lorsque l'activité reprend (par exemple, si l'utilisateur revient sur l'application).
+     * Elle permet de redémarrer la musique de fond si elle est activée.
+     */
 
     @Override
     protected void onResume() {

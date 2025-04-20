@@ -13,6 +13,13 @@ public class SplashFinActivity extends AppCompatActivity {
     private static final int SPLASH_TIME_OUT = 3500;
     private MediaPlayer mediaPlayer;
 
+    /**
+     * Cette méthode affiche l'écran de fin de partie, joue un son de victoire,
+     * récupére les données envoyées par l'activité précédente (score et défis joués),
+     * et ensuite redirige automatiquement vers l'activité `FinPartieActivity` après un délai.
+     *
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,11 +43,16 @@ public class SplashFinActivity extends AppCompatActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
 
+            // Démarrer l'activité FinPartieActivity
             startActivity(intent);
             finish();
         }, SPLASH_TIME_OUT);
     }
 
+    /**
+     * Méthode appelée lorsque l'activité est détruite.
+     * Elle sert à libérer les ressources utilisées par le MediaPlayer afin d'éviter toute fuite de mémoire.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

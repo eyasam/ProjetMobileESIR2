@@ -22,21 +22,47 @@ public class DefiAdapter extends BaseAdapter {
         this.defis = defis;
     }
 
+    /**
+     * Retourne le nombre d'éléments dans la liste des défis
+     * @return
+     */
     @Override
     public int getCount() {
         return defis.size();
     }
 
+    /**
+     * Retourne l'élément à une position donnée dans la liste des défis
+     * @param position
+     * @return
+     */
     @Override
     public Object getItem(int position) {
         return defis.get(position);
     }
 
+    /**
+     * Retourne l'ID de l'élément à une position donnée
+     * @param position
+     * @return
+     */
     @Override
     public long getItemId(int position) {
         return position;
     }
 
+    /**
+     * Création de la vue pour chaque item dans la liste
+     * Récupèration des références des vues dans le layout item_defi.xml
+     * Récupèration du défi correspondant à la position
+     * Remplissage du TextView avec le nom du défi
+     * Sélection de  l'icône appropriée en fonction du défi
+     * Renvoie la vue de l'élément à afficher dans la liste
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
@@ -49,8 +75,10 @@ public class DefiAdapter extends BaseAdapter {
         TextView defiNameTextView = rowView.findViewById(R.id.defiNameTextView);
         ImageView iconImageView = rowView.findViewById(R.id.iconImageView);
 
-        String defi = defis.get(position);
-        defiNameTextView.setText(defi);
+        String defi = defis.get(position); //Récupèration du nom du défi à cette position dans la liste
+
+        defiNameTextView.setText(defi); // Affichage le nom du défi dans le TextView
+
 
         switch (defi) {
             case "Défi Secouer":

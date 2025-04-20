@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.*;
 import android.widget.TextView;
 
@@ -18,7 +19,8 @@ import com.example.projetmobileesir2.ScoreDialogFragment;
 
 public class ShakeActivity extends AppCompatActivity {
 
-    private static final int SEUIL_SENSIBILITE = 5000;
+    private static final int SEUIL_SENSIBILITE = 5000;// Seuil de sensibilité à dépasser pour considérer un mouvement comme une secousse
+
     private static final int DUREE_DEFI = 10000;
 
     private SensorManager sensorManager;
@@ -41,6 +43,13 @@ public class ShakeActivity extends AppCompatActivity {
 
     private  String mode;
 
+    /**
+     *  Écouteur d'événements pour détecter les secousses via l'accéléromètre
+     *  On vérifie si 100ms se sont écoulées depuis la dernière màj
+     *  On récupère les valeurs X, Y, Z de l'accéléromètre et on calcule la variation de mouvement ainsi que la vitesse de la secousse
+     *  Si la vitesse dépasse le seuil, on compte une secousse et on fait vibrer l'appareil
+     *  Màj des anciennes valeurs pour la prochaine comparaison
+     */
     private final SensorEventListener shakeListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -77,16 +86,24 @@ public class ShakeActivity extends AppCompatActivity {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
 
+    // Réception des messages Bluetooth (mode multijoueur)
     private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
+            // Lorsque le message "GO_SHAKE" est reçu, le défi commence
             if ("GO_SHAKE".equals(message)) {
                 startChallenge();
             }
         }
     };
 
+    /**
+     * Initialisation des vues, des capteurs et du vibreur
+     * Récupération des infos sur le mode de jeu
+     * Gestion du mode multijoueur
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +123,7 @@ public class ShakeActivity extends AppCompatActivity {
         isHost = getIntent().getBooleanExtra("isHost", false);
 
         if (isMultiplayer) {
+            // Si c'est l'hôte, on envoie le signal pour commencer le défi
             LocalBroadcastManager.getInstance(this).registerReceiver(
                     bluetoothReceiver, new IntentFilter("BLUETOOTH_MESSAGE"));
 
@@ -116,10 +134,12 @@ public class ShakeActivity extends AppCompatActivity {
                 }, 700);
             }
         } else {
+            // Mode solo ou entrainement: démarrage immédiat du défi
             startChallenge();
         }
     }
 
+    // Lancer le défi
     private void startChallenge() {
         shakeCount = 0;
         challengeRunning = true;
@@ -127,14 +147,20 @@ public class ShakeActivity extends AppCompatActivity {
         startTimer(timeLeftMillis);
     }
 
+    // Enregistre le capteur pour commencer à recevoir des données
     private void registerSensor() {
         sensorManager.registerListener(shakeListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
+    // Arrête l'écoute des données du capteur
     private void unregisterSensor() {
         sensorManager.unregisterListener(shakeListener);
     }
 
+    /**
+     * Lance un compteur pour calculer le temps restant pour le défi
+     * @param millis
+     */
     private void startTimer(long millis) {
         timerStartedAt = SystemClock.elapsedRealtime();
 
@@ -146,19 +172,31 @@ public class ShakeActivity extends AppCompatActivity {
 
             public void onFinish() {
                 challengeRunning = false;
-                unregisterSensor();
+                unregisterSensor(); // Arrête le capteur à la fin
                 //timerText.setText("Temps : 0s");
                 //resultText.setText("Défi terminé !\nScore final : " + shakeCount);
+
+
+                // Ajoute le score au score global (stocké dans SharedPreferences) pour le mode Solo
 
                 SharedPreferences totalPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                 int previousScore = totalPrefs.getInt("totalScore", 0);
                 totalPrefs.edit().putInt("totalScore", previousScore + shakeCount).apply();
+                playSound(R.raw.victory);//Joue un son de victoire
 
                 finishDefi();
             }
         }.start();
     }
+    private void playSound(int resId) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, resId);
+        mediaPlayer.start();
+        mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+    }
 
+    /**
+     * Fait vibrer l'appareil pour donner du feedback
+     */
     private void vibrate() {
         /*if (vibrator != null && vibrator.hasVibrator()) {
             vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
@@ -177,6 +215,11 @@ public class ShakeActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Affichage des résultats à la fin du défi
+     * Ferme simplement l'activité en multijoueur
+     * En mode solo ou entrainement : affiche un dialog avec le score
+     */
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(shakeCount);
@@ -195,6 +238,9 @@ public class ShakeActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Gère la pause stocker la valeur du timer
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -206,6 +252,9 @@ public class ShakeActivity extends AppCompatActivity {
         unregisterSensor();
     }
 
+    /**
+     * Gère la reprise après une pause relancer le timer avec le temps restant
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -221,6 +270,9 @@ public class ShakeActivity extends AppCompatActivity {
         startTimer(timeLeftMillis);
     }
 
+    /**
+     * Libèrer les ressources quand l'activité est arrêtée
+     */
     @Override
     protected void onStop() {
         super.onStop();

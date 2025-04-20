@@ -15,11 +15,18 @@ public class FinPartieActivity extends AppCompatActivity {
 
     private MediaPlayer mediaPlayer;
 
+    /**
+     * Cette méthode initialise les éléments de l'interface (TextView, Buttons) et
+     * récupère les données passées via l'intent (score et défis joués).
+     * Un son de victoire est également joué à la fin de la partie.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fin_partie);
 
+        // Récupération des éléments de l'interface
         TextView scoreTextView = findViewById(R.id.scoreTextView);
         TextView defisTextView = findViewById(R.id.defisTextView);
         Button rejouerButton = findViewById(R.id.btnRejouer);
@@ -69,6 +76,10 @@ public class FinPartieActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Cette méthode est appelée lorsque l'activité est détruite.
+     * Elle permet de libérer les ressources liées au `MediaPlayer` pour éviter les fuites de mémoire.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -24,7 +24,7 @@ import java.util.Random;
 public class GyroscopeActivity extends AppCompatActivity {
 
     private static final int DUREE_JEU = 10000;
-    private static final int MARGE = 10;
+    private static final int MARGE = 10; // Marge d’erreur autorisée en degrés
 
     private SensorManager sensorManager;
     private Sensor rotationSensor;
@@ -47,11 +47,12 @@ public class GyroscopeActivity extends AppCompatActivity {
     private boolean isPaused = false;
     private  String mode;
 
+    // Écouteur des événements du capteur de rotation
     private final SensorEventListener sensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
             if (!challengeRunning || event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR) return;
-
+            // Conversion de la rotation en azimut (orientation autour de l’axe Z)
             float[] rotationMatrix = new float[9];
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             float[] orientation = new float[3];
@@ -62,7 +63,7 @@ public class GyroscopeActivity extends AppCompatActivity {
 
             updateAngleUI(azimuth);
             rotateArrow(azimuth);
-
+            // Vérifie si l'angle est dans la bonne plage pour valider le point
             if (isWithinTarget(azimuth)) {
                 score++;
                 scoreView.setText("Score : " + score);
@@ -76,6 +77,7 @@ public class GyroscopeActivity extends AppCompatActivity {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
 
+    // Récepteur (bluetooth) pour gérer le lancement du défi en multijoueur
     private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -100,6 +102,7 @@ public class GyroscopeActivity extends AppCompatActivity {
         isHost = getIntent().getBooleanExtra("isHost", false);
 
         if (isMultiplayer) {
+            // On prépare la synchronisation avec les autres joueurs
             LocalBroadcastManager.getInstance(this).registerReceiver(bluetoothReceiver, new IntentFilter("BLUETOOTH_MESSAGE"));
 
             if (isHost) {
@@ -113,6 +116,9 @@ public class GyroscopeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initialisation des vues
+     */
     private void initViews() {
         angleView = findViewById(R.id.currentAngle);
         targetView = findViewById(R.id.targetAngle);
@@ -123,11 +129,17 @@ public class GyroscopeActivity extends AppCompatActivity {
         flashView = findViewById(R.id.flashView);
     }
 
+    /**
+     * Initialisation du capteur de rotation
+     */
     private void initSensor() {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
     }
 
+    /**
+     * Lancement du défi capteur+timer
+     */
     private void startChallenge() {
         challengeRunning = true;
         generateNewTarget();
@@ -135,6 +147,10 @@ public class GyroscopeActivity extends AppCompatActivity {
         startTimer(timeLeftMillis);
     }
 
+    /**
+     * Calcul du temps restant lors d'une partie
+     * @param millis
+     */
     private void startTimer(long millis) {
         timerStartedAt = SystemClock.elapsedRealtime();
         timerWasRunning = true;
@@ -154,36 +170,61 @@ public class GyroscopeActivity extends AppCompatActivity {
         }.start();
     }
 
+    /**
+     * Enregistrement du capteur pour écouter les mouvements
+     */
     private void registerSensor() {
         if (rotationSensor != null) {
             sensorManager.registerListener(sensorListener, rotationSensor, SensorManager.SENSOR_DELAY_UI);
         }
     }
 
+    /**
+     * Arrêt de l'écoute du capteur
+     */
     private void unregisterSensor() {
         sensorManager.unregisterListener(sensorListener);
     }
 
+    /**
+     * Génération d'un nouvel angle cible aléatoire
+     */
     private void generateNewTarget() {
         targetAngle = random.nextInt(360);
         targetView.setText("Cible : " + targetAngle + "°");
     }
 
+    /**
+     * Vérification de si l’utilisateur est dans la bonne plage angulaire
+     * @param angle
+     * @return
+     */
     private boolean isWithinTarget(float angle) {
         float delta = Math.abs(angle - targetAngle);
         return delta <= MARGE || delta >= (360 - MARGE);
     }
 
+    /**
+     * On met à jour l’affichage de l’angle courant
+     * @param angle
+     */
     private void updateAngleUI(float angle) {
         angleView.setText(String.format("Ton angle : %.0f°", angle));
     }
 
+    /**
+     * On fait tourner l’image de la flèche selon l’angle détecté
+     * @param angle
+     */
     private void rotateArrow(float angle) {
         arrowImage.setPivotX(arrowImage.getWidth() / 2f);
         arrowImage.setPivotY(arrowImage.getHeight() / 2f);
         arrowImage.setRotation(angle);
     }
 
+    /**
+     * Affichage d'un flash vert rapide à l’écran
+     */
     private void flashGreen() {
         flashView.setAlpha(1f);
         flashView.setVisibility(View.VISIBLE);
@@ -194,6 +235,9 @@ public class GyroscopeActivity extends AppCompatActivity {
                 .start();
     }
 
+    /**
+     * Fin du défi, on sauvegarde du score et arrêt des capteurs
+     */
     private void endChallenge() {
         challengeRunning = false;
         unregisterSensor();
@@ -205,6 +249,9 @@ public class GyroscopeActivity extends AppCompatActivity {
         playSound(R.raw.victory);
     }
 
+    /**
+     * Affichage du score final (multijoueur ou solo)
+     */
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
@@ -225,11 +272,18 @@ public class GyroscopeActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * Méthode pour retentir le son de victoire
+     * @param resId
+     */
     private void playSound(int resId) {
         MediaPlayer mp = MediaPlayer.create(this, resId);
         mp.start();
         mp.setOnCompletionListener(MediaPlayer::release);
     }
+
+    // === Cycle de vie ===
 
     @Override
     protected void onPause() {

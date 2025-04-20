@@ -21,19 +21,35 @@ import com.example.projetmobileesir2.SelectionDefiActivity;
 
 public class ScoreDialogFragment extends DialogFragment {
 
+    /**
+     * Crée une nouvelle instance de ScoreDialogFragment avec le score et le mode passés en arguments.
+     *
+     * @param score Le score final de l'utilisateur.
+     * @param mode Le mode de jeu (par exemple, "entrainement" ou autre).
+     * @return Un objet ScoreDialogFragment.
+     */
+
     public static ScoreDialogFragment newInstance(int score, String mode) {
         ScoreDialogFragment fragment = new ScoreDialogFragment();
         Bundle args = new Bundle();
-        args.putInt("score", score);
-        args.putString("mode", mode);
+        args.putInt("score", score); // mettre le score dans les arguments
+        args.putString("mode", mode); // mettre le mode dans les arguments
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Cette méthode est appelée pour créer le dialogue personnalisé.
+     * on récupère les arguments passés lors de la création du fragment, on initialise et configure la TextView pour afficher le score
+     * on crée une animation d'apparition pour le texte du score et on configure le dialogue avec la vue personnalisée
+     * @param savedInstanceState Si le fragment est recréé, on peut récupérer l'état précédent ici.
+     * @return Le dialogue avec l'interface graphique et le comportement définis.
+     */
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Context context = requireActivity();
+        Context context = requireActivity(); // Récupère le contexte de l'activité actuelle
 
         int score = getArguments().getInt("score");
         String mode = getArguments().getString("mode");
@@ -50,18 +66,22 @@ public class ScoreDialogFragment extends DialogFragment {
         fadeIn.setDuration(800); // durée de l'animation
         tvScore.startAnimation(fadeIn);
 
+        // Configuration du dialogue
         builder.setView(view)
 
-                .setCancelable(false)
+                .setCancelable(false)// Le dialogue ne peut pas être annulé par un clic en dehors de OK
                 .setPositiveButton("OK", (dialog, which) -> {
                     Intent intent;
                     if ("entrainement".equals(mode)) {
+                        // Si le mode est "entrainement", relance l'activité d'entraînement
                         intent = new Intent(context, TrainingActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     } else {
+                        // Sinon, c'est en mode solo et on retourne à la sélection des défis
                         intent = new Intent(context, SelectionDefiActivity.class);
 
                     }
+                    // Lancement de l'activity cible
                     context.startActivity(intent);
                     requireActivity().finish();  // Fermer l'activité du défi en cours
                 });

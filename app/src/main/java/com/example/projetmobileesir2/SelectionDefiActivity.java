@@ -31,6 +31,20 @@ public class SelectionDefiActivity extends AppCompatActivity {
     private TextView scoreTextView;
     private List<String> randomDefis;
 
+    /**
+     * Cette méthode est appelée lors de la création de l'activité.
+     * Elle sert à initialiser l'interface utilisateur, récupérer les données des préférences partagées,
+     * sélectionner les défis à afficher et gérer l'affichage du score ainsi que le bouton "Quitter".
+     *
+     * Cette méthode permet :
+     * - L'Initialisation des vues (ListView pour les défis et TextView pour le score).
+     * - La vérification du nombre de défis joués dans les préférences partagées. Si plus de 3 défis ont été joués,
+     *   la fin de la partie est affichée avec les scores et défis déjà joués.
+     * - La sélection aléatoire de 3 défis parmi plusieurs catégories : capteur, tactile, et question.
+     * - L'Affichage des défis dans une liste mélangée.
+     * - La configuration du bouton "Quitter" pour réinitialiser les données de jeu dans les préférences partagées.
+     * - La gestion de la sélection d'un défi dans la liste pour démarrer l'activité correspondante.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +53,7 @@ public class SelectionDefiActivity extends AppCompatActivity {
         defiListView = findViewById(R.id.defiListView);
         scoreTextView = findViewById(R.id.scoreTextView);
 
+        // Récupérer les sharedPreferences pour obtenir le nombre de défis joués.
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int nbDefisJoues = prefs.getInt("nbDefisJoues", 0);
 
@@ -58,11 +73,12 @@ public class SelectionDefiActivity extends AppCompatActivity {
         }
 
 
-        updateScoreDisplay();
+        updateScoreDisplay();// Màj de  l'affichage du score à l'initialisation.
 
         Button quitButton = findViewById(R.id.btnQuitter);
         quitButton.setVisibility(View.VISIBLE);
         quitButton.setOnClickListener(v -> {
+            // Réinitialisation des données du jeu dans les sharedPreferences.
             prefs.edit()
                     .putInt("totalScore", 0)
                     .putInt("nbDefisJoues", 0)
@@ -98,6 +114,7 @@ public class SelectionDefiActivity extends AppCompatActivity {
         defiListView.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
             String selectedDefi = randomDefis.get(position);
 
+            // Lancement de l'activité correspondante au défi sélectionné.
             Intent intent = null;
             switch (selectedDefi) {
                 case "Défi Secouer":
@@ -120,6 +137,7 @@ public class SelectionDefiActivity extends AppCompatActivity {
                     break;
             }
 
+            // démarrer l'activité correspondante
             if (intent != null) {
                 intent.putExtra("mode", "jouer");            // mode "jouer"
                 intent.putExtra("isMultiplayer", false);     // et c'est SOLO ici
@@ -139,12 +157,21 @@ public class SelectionDefiActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Méthode appelée lorsque l'activité reprend après une pause (par exemple après une rotation d'écran).
+     * Elle permet de mettre à jour l'affichage du score chaque fois que l'utilisateur revient à cette activité.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         updateScoreDisplay();
     }
 
+    /**
+     * Cette méthode met à jour l'affichage du score actuel de l'utilisateur.
+     * Elle récupère la valeur du score total stocké dans les SharedPreferences et l'affiche dans le TextView.
+     *
+     */
     private void updateScoreDisplay() {
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int totalScore = prefs.getInt("totalScore", 0);
