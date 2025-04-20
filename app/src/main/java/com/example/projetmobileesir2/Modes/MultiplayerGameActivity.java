@@ -95,7 +95,7 @@ public class MultiplayerGameActivity extends AppCompatActivity {
         if ("SNAKE".equals(troisiemeDefi)) {
             i = new Intent(this, SnakeActivity.class);
         } else {
-            i = new Intent(this, CutTheDotsActivity.class);
+            i = new Intent(this, CutTheFruitActivity.class);
         }
 
         i.putExtra("isMultiplayer", true);

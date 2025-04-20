@@ -1,0 +1,34 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/cutFruitTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Temps : 30s"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/cutFruitScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score : 0"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_below="@id/cutFruitTimer"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp" />
+
+    <FrameLayout
+        android:id="@+id/cutFruitContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/cutFruitScore"
+        android:layout_marginTop="16dp" />
+</RelativeLayout>

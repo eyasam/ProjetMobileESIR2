@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.projetmobileesir2.Defis.CutTheDotsActivity;
+import com.example.projetmobileesir2.Defis.CutTheFruitActivity;
 import com.example.projetmobileesir2.Defis.ShakeActivity;
 import com.example.projetmobileesir2.Defis.DevineMotActivity;
 import com.example.projetmobileesir2.Defis.GyroscopeActivity;
@@ -116,7 +116,7 @@ public class SelectionDefiActivity extends AppCompatActivity {
                     intent = new Intent(this, SnakeActivity.class);
                     break;
                 case "Défi Fruit":
-                    intent = new Intent(this, CutTheDotsActivity.class);
+                    intent = new Intent(this, CutTheFruitActivity.class);
                     break;
             }
 
