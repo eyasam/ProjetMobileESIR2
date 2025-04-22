@@ -31,6 +31,7 @@
         <activity android:name=".Defis.ShakeActivity" />
         <activity android:name=".Defis.DevineMotActivity" />
         <activity android:name=".Defis.SnakeActivity"/>
+        <activity android:name=".Defis.CutTheFruitActivity"/>
 
 
         <activity android:name=".MainActivity" />
