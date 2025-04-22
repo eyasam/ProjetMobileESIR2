@@ -11,13 +11,13 @@
         android:layout_gravity="center_horizontal|top"
         android:gravity="center_horizontal"
         android:padding="16dp"
-        android:layout_marginTop="100dp"> <!-- Ajuste ici pour descendre tout -->
+        android:layout_marginTop="100dp">
 
         <TextView
             android:id="@+id/trainingTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mode Entraînement"
+            android:text="@string/training_mode"
             android:textSize="20sp"
             android:textStyle="bold"
             android:fontFamily="casual"
@@ -42,7 +42,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="12dp"
             android:backgroundTint="@color/color11"
-            android:text="← Retour"
+            android:text="@string/back"
             android:textAllCaps="false"
             android:textColor="@color/white" />
     </LinearLayout>

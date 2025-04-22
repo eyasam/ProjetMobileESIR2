@@ -61,7 +61,6 @@ public class FinPartieActivity extends AppCompatActivity {
             finish();
         });
 
-        // ❌ Quitter
         quitterButton.setOnClickListener(v -> {
             // Réinitialisation du score total à zéro au moment où l'utilisateur quitte
             SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);

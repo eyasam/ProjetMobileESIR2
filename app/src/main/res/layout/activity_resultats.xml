@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/tvScore"
-        android:text="Scores"
+        android:text="@string/scores"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp"
@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/tvMessage"
-        android:text="Résultat"
+        android:text="@string/res"
         android:textSize="22sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

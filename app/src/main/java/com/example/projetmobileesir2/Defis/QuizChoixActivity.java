@@ -60,7 +60,6 @@ public class QuizChoixActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_choix);
 
-        // Initialisation des vues
         tvScore = findViewById(R.id.tvScore);
         tvTimer = findViewById(R.id.tvTimer);
         tvQuestion = findViewById(R.id.tvQuestion);
@@ -76,7 +75,7 @@ public class QuizChoixActivity extends AppCompatActivity {
 
         mode = getIntent().getStringExtra("mode");
 
-        initQuestions(); // Préparation des questions
+        initQuestions();
 
         // Gestion du mode multijoueur
         if (isMultiplayer) {
@@ -189,7 +188,6 @@ public class QuizChoixActivity extends AppCompatActivity {
         if (timer != null) timer.cancel();
         //tvQuestion.setText("Fin du jeu !");
         //tvTimer.setText("0s");
-        // ✅ Ajouter au score total
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int previousScore = prefs.getInt("totalScore", 0);
         prefs.edit().putInt("totalScore", previousScore + score).apply();

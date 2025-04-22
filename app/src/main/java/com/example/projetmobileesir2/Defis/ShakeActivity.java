@@ -99,7 +99,6 @@ public class ShakeActivity extends AppCompatActivity {
     };
 
     /**
-     * Initialisation des vues, des capteurs et du vibreur
      * Récupération des infos sur le mode de jeu
      * Gestion du mode multijoueur
      * @param savedInstanceState

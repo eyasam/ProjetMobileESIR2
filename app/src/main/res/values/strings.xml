@@ -9,4 +9,23 @@
     <string name="shake">Secoue ton téléphone !</string>
     <string name="timer">Temps : 20s</string>
     <string name="secousses_0">Secousses : 0</string>
+    <string name="training_mode">Mode Entraînement</string>
+    <string name="back">← Retour</string>
+    <string name="time_left_30">Time Left: 30</string>
+    <string name="defi_selection">Sélectionne ton défi !</string>
+    <string name="score_0">Score : 0</string>
+    <string name="scores">Scores</string>
+    <string name="res">Résultat</string>
+    <string name="score_du_premier_d_fi">Score du premier défi :</string>
+    <string name="prep_deuxime">Préparation du deuxième défi...</string>
+    <string name="D">Réponse D</string>
+    <string name="C">Réponse C</string>
+    <string name="B">Réponse B</string>
+    <string name="A">Réponse A</string>
+    <string name="qui_est_sur_la_photo">Qui est sur la photo ?</string>
+    <string name="time_60s">60s</string>
+    <string name="score__0">Score : 0</string>
+    <string name="en_attente_d_un_adversaire">En attente d’un adversaire...</string>
+    <string name="connexion_success">Connexion réussie !</string>
+    <string name="connexion_bluetooth">Connexion Bluetooth</string>
 </resources>

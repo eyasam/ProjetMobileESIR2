@@ -139,7 +139,6 @@ public class BluetoothActivity extends AppCompatActivity {
                 result -> {
                     if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
                         Toast.makeText(this, "Bluetooth activé", Toast.LENGTH_SHORT).show();
-                        // ❌ On ne démarre PAS le scan ici !
                     } else {
                         Toast.makeText(this, "Bluetooth non activé", Toast.LENGTH_SHORT).show();
                     }

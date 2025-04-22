@@ -9,7 +9,7 @@
         android:id="@+id/bluetoothTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connexion Bluetooth"
+        android:text="@string/connexion_bluetooth"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/color11"

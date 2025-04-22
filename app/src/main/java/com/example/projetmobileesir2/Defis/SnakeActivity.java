@@ -32,7 +32,6 @@ public class SnakeActivity extends AppCompatActivity {
 
     /**
      * Charge le layout XML
-     * Récupération des vues à partir du layout
      * Récupère les données envoyées via l'intent
      * Instancie la vue Snake, lui passe la référence vers le TextView score
      * Quand le jeu se termine (collision ou temps écoulé), cette callback est déclenchée avec le setOnGameOverListener

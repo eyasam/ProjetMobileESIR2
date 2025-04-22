@@ -32,19 +32,17 @@ public class CutTheFruitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cut_the_fruit);
 
-        //Initialiser les vues
         gameContainer = findViewById(R.id.cutFruitContainer);
         tvScore = findViewById(R.id.cutFruitScore);
         tvTimer = findViewById(R.id.cutFruitTimer);
 
-        // On récupère les données depuis l'Intent
         mode = getIntent().getStringExtra("mode");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
 
         // On crée et on ajoute la vue personnalisée du défi
         gameView = new CutTheFruitView(this, score -> {
             this.score = score;
-            showFinalScore(); //on affiche le score final de la partie
+            showFinalScore();
         }, tvScore);
 
         // On passe la TextView timer à la vue pour màj directe
@@ -66,7 +64,7 @@ public class CutTheFruitActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-                gameView.endGame(); // On appelle la fin du jeu
+                gameView.endGame();
             }
         }.start();
     }

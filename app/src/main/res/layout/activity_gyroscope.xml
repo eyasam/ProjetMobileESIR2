@@ -57,7 +57,6 @@
         android:src="@drawable/compass" />
 
 
-    <!-- Creeper qui tourne -->
     <ImageView
         android:id="@+id/fleche"
         android:layout_width="90dp"

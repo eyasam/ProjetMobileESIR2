@@ -6,7 +6,6 @@
     android:background="@color/color2"
     android:padding="16dp">
 
-    <!-- Score -->
     <TextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"
@@ -18,14 +17,13 @@
         android:layout_marginTop="20dp" />
 
 
-    <!-- Cadrage de la zone de jeu -->
     <TextView
         android:id="@+id/timeLeftText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="45dp"
-        android:text="Time Left: 30"
+        android:text="@string/time_left_30"
         android:textColor="@color/color15"
         android:textSize="18sp" />
 

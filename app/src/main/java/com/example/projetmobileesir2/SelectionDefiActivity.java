@@ -37,7 +37,6 @@ public class SelectionDefiActivity extends AppCompatActivity {
      * sélectionner les défis à afficher et gérer l'affichage du score ainsi que le bouton "Quitter".
      *
      * Cette méthode permet :
-     * - L'Initialisation des vues (ListView pour les défis et TextView pour le score).
      * - La vérification du nombre de défis joués dans les préférences partagées. Si plus de 3 défis ont été joués,
      *   la fin de la partie est affichée avec les scores et défis déjà joués.
      * - La sélection aléatoire de 3 défis parmi plusieurs catégories : capteur, tactile, et question.

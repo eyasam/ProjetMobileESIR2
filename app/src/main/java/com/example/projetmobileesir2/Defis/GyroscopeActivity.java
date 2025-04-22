@@ -24,7 +24,7 @@ import java.util.Random;
 public class GyroscopeActivity extends AppCompatActivity {
 
     private static final int DUREE_JEU = 10000;
-    private static final int MARGE = 10; // Marge d’erreur autorisée en degrés
+    private static final int MARGE = 10;
 
     private SensorManager sensorManager;
     private Sensor rotationSensor;
@@ -116,9 +116,6 @@ public class GyroscopeActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Initialisation des vues
-     */
     private void initViews() {
         angleView = findViewById(R.id.currentAngle);
         targetView = findViewById(R.id.targetAngle);

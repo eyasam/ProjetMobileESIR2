@@ -47,13 +47,12 @@ public class DevineMotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deviner_le_mot);
 
-        // Initialisation des vues
         tvTimer = findViewById(R.id.tvTimer);
         tvScore = findViewById(R.id.tvScore);
         tvEnigme = findViewById(R.id.tvEnigme);
         etReponse = findViewById(R.id.etRéponse);
         btnValider = findViewById(R.id.btnValider);
-        // Vérifie si on est en mode multijoueur
+
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
 
         mode = getIntent().getStringExtra("mode");

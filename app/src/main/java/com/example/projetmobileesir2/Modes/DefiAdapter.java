@@ -53,7 +53,6 @@ public class DefiAdapter extends BaseAdapter {
 
     /**
      * Création de la vue pour chaque item dans la liste
-     * Récupèration des références des vues dans le layout item_defi.xml
      * Récupèration du défi correspondant à la position
      * Remplissage du TextView avec le nom du défi
      * Sélection de  l'icône appropriée en fonction du défi

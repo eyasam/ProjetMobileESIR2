@@ -12,7 +12,7 @@
         android:id="@+id/tvIntermediaireScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Score du premier défi : "
+        android:text="@string/score_du_premier_d_fi"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#333333"
@@ -22,7 +22,7 @@
         android:id="@+id/tvSuite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Préparation du deuxième défi..."
+        android:text="@string/prep_deuxime"
         android:textSize="18sp"
         android:textColor="#555555"
         android:layout_marginTop="10dp" />

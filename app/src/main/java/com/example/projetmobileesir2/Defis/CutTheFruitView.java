@@ -264,7 +264,6 @@ public class CutTheFruitView extends View {
 
     }
 
-    // === CLASSES INTERNES ===
     /**
      * Représente un fruit (ou une bombe) avec sa position, son image et son type.
      */

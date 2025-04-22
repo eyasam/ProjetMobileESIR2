@@ -12,7 +12,7 @@
         android:id="@+id/multiStatusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connexion réussie !"
+        android:text="@string/connexion_success"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="12dp"
@@ -22,7 +22,7 @@
         android:id="@+id/multiInstructionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="En attente d’un adversaire..."
+        android:text="@string/en_attente_d_un_adversaire"
         android:textSize="18sp"
         android:textColor="#666666" />
 

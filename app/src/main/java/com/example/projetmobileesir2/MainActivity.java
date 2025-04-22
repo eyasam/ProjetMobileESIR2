@@ -30,17 +30,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Liens avec le layout
         playButton = findViewById(R.id.playButton);
         trainingMode = findViewById(R.id.trainingMode);
         soundToggleButton = findViewById(R.id.soundToggleButton);
 
-        // Musique de fond
         bgMusic = MediaPlayer.create(this, R.raw.background_music);
         bgMusic.setLooping(true);
         bgMusic.start();
 
-        // Son de clic
         clickSound = MediaPlayer.create(this, R.raw.click);
 
         // Toggle du son via le bouton image
@@ -55,13 +52,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Bouton Jouer → Choix Solo / Multijoueur
         playButton.setOnClickListener(view -> {
             if (isSoundOn) clickSound.start();
             showModeDialog();
         });
 
-        // Bouton Entraînement
         trainingMode.setOnClickListener(view -> {
             if (isSoundOn) clickSound.start();
             Intent intent = new Intent(MainActivity.this, TrainingActivity.class);
@@ -96,12 +91,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (bgMusic != null) {
-            bgMusic.release(); // Libère la musique de fond
-            bgMusic = null; //mettre la variable à null pour éviter les références
+            bgMusic.release();
+            bgMusic = null;
         }
         if (clickSound != null) {
-            clickSound.release(); // Libère le son de clic
-            clickSound = null; //mettre la variable à null pour éviter les références
+            clickSound.release();
+            clickSound = null;
         }
         super.onDestroy();
     }

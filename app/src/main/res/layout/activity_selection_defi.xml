@@ -7,12 +7,11 @@
     android:background="@color/white"
     tools:context=".SelectionDefiActivity">
 
-    <!-- Titre -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sélectionne ton défi !"
+        android:text="@string/defi_selection"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/color11"
@@ -20,12 +19,11 @@
         android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true" />
 
-    <!-- Score -->
     <TextView
         android:id="@+id/scoreTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Score : 0"
+        android:text="@string/score_0"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/color15"
@@ -34,7 +32,6 @@
         android:layout_centerHorizontal="true"
         android:fontFamily="casual" />
 
-    <!-- Liste des défis -->
     <ListView
         android:id="@+id/defiListView"
         android:layout_width="match_parent"

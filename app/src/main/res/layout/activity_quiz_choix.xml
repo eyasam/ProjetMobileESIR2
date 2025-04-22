@@ -3,15 +3,14 @@
     android:id="@+id/quizLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/white"
     android:padding="16dp">
 
-    <!-- Score en haut à gauche -->
     <TextView
         android:id="@+id/tvScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Score : 0"
+        android:text="@string/score__0"
         android:textColor="#000000"
         android:textStyle="bold"
         android:fontFamily="casual"
@@ -19,12 +18,11 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="16dp" />
 
-    <!-- Timer en haut à droite -->
     <TextView
         android:id="@+id/tvTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="60s"
+        android:text="@string/time_60s"
         android:textColor="#000000"
         android:textStyle="bold"
         android:fontFamily="casual"
@@ -32,12 +30,11 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp" />
 
-    <!-- Question -->
     <TextView
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Qui est sur la photo ?"
+        android:text="@string/qui_est_sur_la_photo"
         android:textSize="20sp"
         android:textColor="#333333"
         android:textStyle="bold"
@@ -46,7 +43,6 @@
         android:layout_below="@id/tvScore"
         android:layout_marginTop="40dp" />
 
-    <!-- Image -->
     <ImageView
         android:id="@+id/imageViewQuestion"
         android:layout_width="250dp"
@@ -57,7 +53,6 @@
         android:scaleType="centerCrop"
         android:background="@drawable/image_border"/>
 
-    <!-- Boutons de réponses -->
     <LinearLayout
         android:id="@+id/answerLayout"
         android:layout_width="match_parent"
@@ -71,7 +66,7 @@
             android:id="@+id/btnAnswerA"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Réponse A"
+            android:text="@string/A"
             android:textSize="18sp"
             android:textColor="#FFFFFF"
             android:background="#2E7D32"
@@ -82,7 +77,7 @@
             android:id="@+id/btnAnswerB"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Réponse B"
+            android:text="@string/B"
             android:textSize="18sp"
             android:textColor="#FFFFFF"
             android:background="#2E7D32"
@@ -93,7 +88,7 @@
             android:id="@+id/btnAnswerC"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Réponse C"
+            android:text="@string/C"
             android:textSize="18sp"
             android:textColor="#FFFFFF"
             android:background="#2E7D32"
@@ -104,7 +99,7 @@
             android:id="@+id/btnAnswerD"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Réponse D"
+            android:text="@string/D"
             android:textSize="18sp"
             android:textColor="#FFFFFF"
             android:background="#2E7D32"
