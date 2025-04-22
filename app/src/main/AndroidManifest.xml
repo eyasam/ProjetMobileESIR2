@@ -30,7 +30,6 @@
         <activity android:name=".Defis.QuizChoixActivity" />
         <activity android:name=".Defis.ShakeActivity" />
         <activity android:name=".Defis.DevineMotActivity" />
-        <activity android:name=".Defis.CutTheFruitActivity"/>
         <activity android:name=".Defis.SnakeActivity"/>
 
 
