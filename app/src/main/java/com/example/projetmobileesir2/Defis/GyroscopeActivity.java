@@ -14,12 +14,16 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
-import com.example.projetmobileesir2.Modes.ResultatsActivity;
+import com.example.projetmobileesir2.Modes.MultiplayerGame.MultiplayerGameActivity;
 import com.example.projetmobileesir2.R;
-import com.example.projetmobileesir2.ScoreDialogFragment;
+import com.example.projetmobileesir2.Modes.ScoreSoloTrainingFragment;
 
 import java.util.Random;
+
+/**
+ * le joueur doit orienter le téléphone vers un angle cible.
+ * utilise le capteur de rotation un timer et fonctionne en solo ou multijoueur.
+ */
 
 public class GyroscopeActivity extends AppCompatActivity {
 
@@ -47,12 +51,12 @@ public class GyroscopeActivity extends AppCompatActivity {
     private boolean isPaused = false;
     private  String mode;
 
-    // Écouteur des événements du capteur de rotation
+    //ecouteur des événements du capteur de rotation
     private final SensorEventListener sensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
             if (!challengeRunning || event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR) return;
-            // Conversion de la rotation en azimut (orientation autour de l’axe Z)
+            // conversion de la rotation en azimut
             float[] rotationMatrix = new float[9];
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             float[] orientation = new float[3];
@@ -63,7 +67,7 @@ public class GyroscopeActivity extends AppCompatActivity {
 
             updateAngleUI(azimuth);
             rotateArrow(azimuth);
-            // Vérifie si l'angle est dans la bonne plage pour valider le point
+            // verif si l'angle est dans la bonne plage pour valider le point
             if (isWithinTarget(azimuth)) {
                 score++;
                 scoreView.setText("Score : " + score);
@@ -126,16 +130,13 @@ public class GyroscopeActivity extends AppCompatActivity {
         flashView = findViewById(R.id.flashView);
     }
 
-    /**
-     * Initialisation du capteur de rotation
-     */
     private void initSensor() {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
     }
 
     /**
-     * Lancement du défi capteur+timer
+     * défi capteur+timer
      */
     private void startChallenge() {
         challengeRunning = true;
@@ -145,8 +146,7 @@ public class GyroscopeActivity extends AppCompatActivity {
     }
 
     /**
-     * Calcul du temps restant lors d'une partie
-     * @param millis
+     * calcul du temps restant lors d'une partie
      */
     private void startTimer(long millis) {
         timerStartedAt = SystemClock.elapsedRealtime();
@@ -168,7 +168,7 @@ public class GyroscopeActivity extends AppCompatActivity {
     }
 
     /**
-     * Enregistrement du capteur pour écouter les mouvements
+     * enregistrement du capteur pour écouter les mouvements
      */
     private void registerSensor() {
         if (rotationSensor != null) {
@@ -177,41 +177,34 @@ public class GyroscopeActivity extends AppCompatActivity {
     }
 
     /**
-     * Arrêt de l'écoute du capteur
+     * arrêt de l'écoute du capteur
      */
     private void unregisterSensor() {
         sensorManager.unregisterListener(sensorListener);
     }
 
     /**
-     * Génération d'un nouvel angle cible aléatoire
+     * génération d'un nouvel angle cible aléatoire
      */
     private void generateNewTarget() {
         targetAngle = random.nextInt(360);
         targetView.setText("Cible : " + targetAngle + "°");
     }
 
-    /**
-     * Vérification de si l’utilisateur est dans la bonne plage angulaire
-     * @param angle
-     * @return
-     */
     private boolean isWithinTarget(float angle) {
         float delta = Math.abs(angle - targetAngle);
         return delta <= MARGE || delta >= (360 - MARGE);
     }
 
     /**
-     * On met à jour l’affichage de l’angle courant
-     * @param angle
+     * met à jour l’affichage de l’angle courant
      */
     private void updateAngleUI(float angle) {
         angleView.setText(String.format("Ton angle : %.0f°", angle));
     }
 
     /**
-     * On fait tourner l’image de la flèche selon l’angle détecté
-     * @param angle
+     * on fait tourner l’image de la flèche selon l’angle détecté
      */
     private void rotateArrow(float angle) {
         arrowImage.setPivotX(arrowImage.getWidth() / 2f);
@@ -219,9 +212,6 @@ public class GyroscopeActivity extends AppCompatActivity {
         arrowImage.setRotation(angle);
     }
 
-    /**
-     * Affichage d'un flash vert rapide à l’écran
-     */
     private void flashGreen() {
         flashView.setAlpha(1f);
         flashView.setVisibility(View.VISIBLE);
@@ -232,13 +222,9 @@ public class GyroscopeActivity extends AppCompatActivity {
                 .start();
     }
 
-    /**
-     * Fin du défi, on sauvegarde du score et arrêt des capteurs
-     */
     private void endChallenge() {
         challengeRunning = false;
         unregisterSensor();
-        //resultView.setText("Défi terminé ! Score : " + score);
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int previousScore = prefs.getInt("totalScore", 0);
         prefs.edit().putInt("totalScore", previousScore + score).apply();
@@ -246,41 +232,23 @@ public class GyroscopeActivity extends AppCompatActivity {
         playSound(R.raw.victory);
     }
 
-    /**
-     * Affichage du score final (multijoueur ou solo)
-     */
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
             finish();
         } else {
-            //Ancien code
-            /*Intent intent = new Intent(this, ResultatsActivity.class);
-            intent.putExtra("scoreLocal", score);
-            startActivity(intent);
-
-             */
-
-            // Affichage du ScoreDialogFragment
-            ScoreDialogFragment.newInstance(score, mode)
+            ScoreSoloTrainingFragment.newInstance(score, mode)
                     .show(getSupportFragmentManager(), "score_dialog");
 
         }
 
     }
 
-
-    /**
-     * Méthode pour retentir le son de victoire
-     * @param resId
-     */
     private void playSound(int resId) {
         MediaPlayer mp = MediaPlayer.create(this, resId);
         mp.start();
         mp.setOnCompletionListener(MediaPlayer::release);
     }
-
-    // === Cycle de vie ===
 
     @Override
     protected void onPause() {

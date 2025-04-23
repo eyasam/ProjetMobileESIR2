@@ -1,4 +1,4 @@
-package com.example.projetmobileesir2.Modes;
+package com.example.projetmobileesir2.Modes.MultiplayerGame;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -7,20 +7,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetmobileesir2.R;
 
 /**
- * Activité qui affiche les résultats finaux
- * Elle compare les scores et joue un son de victoire ou de défaite.
+ * affiche le résultat final d'une partie multijoueur
+ * compare les scores et joue un son selon le résultat
  */
-public class ResultatsActivity extends AppCompatActivity {
+
+public class ResultatsMultiplayerGameActivity extends AppCompatActivity {
 
     private TextView tvScore, tvMessage;
     private int scoreLocal, scoreAdverse;
 
-    /**
-     * Initialisation des éléments de l'interface
-     * Récupération des scores passés dans l'Intent
-     * Appel de la méthode pour afficher le résultat
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,12 +31,11 @@ public class ResultatsActivity extends AppCompatActivity {
     }
 
     /**
-     * Méthode pour afficher le résultat du jeu
-     * En comparant les scores pour déterminer le message et le son à jouer
+     * afficher le résultat du jeu en comparant les scores pour déterminer le message et le son à jouer
      */
     private void afficherResultat() {
-        String msg = "🤝 Égalité !"; // Message par défaut (égalité)
-        int son = 0; // Valeur par défaut pour le son (aucun son joué)
+        String msg = "🤝 Égalité !";
+        int son = 0;
 
         if (scoreLocal > scoreAdverse) {
             msg = "🎉 Tu as gagné !";
@@ -54,14 +48,9 @@ public class ResultatsActivity extends AppCompatActivity {
         tvScore.setText("Ton score total : " + scoreLocal + "\nScore adverse : " + scoreAdverse);
         tvMessage.setText(msg);
 
-        // Si un son est à jouer, on appelle la méthode playSound
         if (son != 0) playSound(son);
     }
 
-    /**
-     * Méthode pour jouer un son
-     * @param resId
-     */
     private void playSound(int resId) {
         MediaPlayer mp = MediaPlayer.create(this, resId);
         mp.start();

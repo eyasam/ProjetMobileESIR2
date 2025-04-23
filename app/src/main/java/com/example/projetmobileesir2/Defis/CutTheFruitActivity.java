@@ -8,9 +8,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.MultiplayerGame.MultiplayerGameActivity;
 import com.example.projetmobileesir2.R;
-import com.example.projetmobileesir2.ScoreDialogFragment;
+import com.example.projetmobileesir2.Modes.ScoreSoloTrainingFragment;
+
+/**
+ * avec minuterie score en temps réel et compatibilité multijoueur.
+ * affiche le score final et déclenche les actions de fin selon le mode de jeu
+ */
 
 public class CutTheFruitActivity extends AppCompatActivity {
 
@@ -62,6 +67,9 @@ public class CutTheFruitActivity extends AppCompatActivity {
         }.start();
     }
 
+    /**
+     * Affiche le score final et gère la sauvegarde selon le mode de jeu
+     */
     private void showFinalScore() {
         addScore(score);
         playSound(R.raw.victory);
@@ -70,11 +78,14 @@ public class CutTheFruitActivity extends AppCompatActivity {
             MultiplayerGameActivity.saveLocalScore(score);
             finish();
         } else {
-            ScoreDialogFragment.newInstance(score, mode)
+            ScoreSoloTrainingFragment.newInstance(score, mode)
                     .show(getSupportFragmentManager(), "scoreDialog");
         }
     }
 
+    /**
+     * sauvegarde le score dans les préférences partagées
+     */
     private void addScore(int s) {
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int previous = prefs.getInt("totalScore", 0);

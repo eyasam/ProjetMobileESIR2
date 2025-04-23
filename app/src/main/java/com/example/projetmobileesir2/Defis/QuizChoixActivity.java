@@ -4,7 +4,6 @@ import android.content.*;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.*;
@@ -12,15 +11,18 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
-import com.example.projetmobileesir2.Modes.ResultatsActivity;
+import com.example.projetmobileesir2.Modes.MultiplayerGame.MultiplayerGameActivity;
 import com.example.projetmobileesir2.R;
-import com.example.projetmobileesir2.ScoreDialogFragment;
-import com.example.projetmobileesir2.SelectionDefiActivity;
+import com.example.projetmobileesir2.Modes.ScoreSoloTrainingFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+/**
+ * activité du quiz à choix multiples avec images et timer
+ * compatible solo et multijoueur le score est calculé en fonction des bonnes rép
+ */
 
 public class QuizChoixActivity extends AppCompatActivity {
 
@@ -69,7 +71,6 @@ public class QuizChoixActivity extends AppCompatActivity {
         btnC = findViewById(R.id.btnAnswerC);
         btnD = findViewById(R.id.btnAnswerD);
 
-        // Récupération des données
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         isHost = getIntent().getBooleanExtra("isHost", false);
 
@@ -77,7 +78,6 @@ public class QuizChoixActivity extends AppCompatActivity {
 
         initQuestions();
 
-        // Gestion du mode multijoueur
         if (isMultiplayer) {
             LocalBroadcastManager.getInstance(this).registerReceiver(bluetoothReceiver, new IntentFilter("BLUETOOTH_MESSAGE"));
             if (isHost) {
@@ -89,7 +89,6 @@ public class QuizChoixActivity extends AppCompatActivity {
         }
     }
 
-    // Initialise les questions du quiz
     private void initQuestions() {
         questions.add(new Question("Combien de cœurs a une pieuvre ?", R.drawable.pieuvre, "1", "2", "3", "8", "3"));
         questions.add(new Question("Que signifie 'karaoké' en japonais ?", R.drawable.karaoke, "Chanter mal", "Orchestre vide", "Danse en duo", "Boisson sucrée", "Orchestre vide"));
@@ -105,13 +104,11 @@ public class QuizChoixActivity extends AppCompatActivity {
         Collections.shuffle(questions);
     }
 
-    // On démarre le quiz : timer + première question
     private void startQuiz() {
         startTimer(timeLeftMillis);
         showNextQuestion();
     }
 
-    // On lance un compteur pour chaque question
     private void startTimer(long millis) {
         timerStartedAt = SystemClock.elapsedRealtime();
 
@@ -128,7 +125,6 @@ public class QuizChoixActivity extends AppCompatActivity {
         }.start();
     }
 
-    // Affiche la prochaine question à l'écran
     private void showNextQuestion() {
         if (currentQuestionIndex >= questions.size()) {
             endGame();
@@ -156,7 +152,6 @@ public class QuizChoixActivity extends AppCompatActivity {
         setButtonListener(btnD);
     }
 
-    // On attribue l’action à chaque bouton de réponse
     private void setButtonListener(Button btn) {
         btn.setOnClickListener(v -> {
             if (gameOver) return;
@@ -177,17 +172,9 @@ public class QuizChoixActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * On termine le jeu et affiche les résultats
-     * On sauvegarde du score total dans les préférences
-     * Désactivation des boutons et affichage d’un son de fin
-     * Affiche la popup de score ou retourne en multi
-     */
     private void endGame() {
         gameOver = true;
         if (timer != null) timer.cancel();
-        //tvQuestion.setText("Fin du jeu !");
-        //tvTimer.setText("0s");
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int previousScore = prefs.getInt("totalScore", 0);
         prefs.edit().putInt("totalScore", previousScore + score).apply();
@@ -201,7 +188,6 @@ public class QuizChoixActivity extends AppCompatActivity {
     }
 
 
-    // Pour jouer un son
     private void playSound(int resId) {
         MediaPlayer mediaPlayer = MediaPlayer.create(this, resId);
         mediaPlayer.start();
@@ -209,19 +195,14 @@ public class QuizChoixActivity extends AppCompatActivity {
     }
 
     /**
-     * Gestion de  la fin du défi selon le mode de jeu
+     * gestion de  la fin du défi selon le mode de jeu
      */
     private void finishDefi() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(score);
             finish();
         } else {
-            /*Intent intent = new Intent(this, ResultatsActivity.class);
-            intent.putExtra("scoreLocal", score);
-            startActivity(intent);
-
-             */
-            ScoreDialogFragment.newInstance(score, mode)
+            ScoreSoloTrainingFragment.newInstance(score, mode)
                     .show(getSupportFragmentManager(), "scoreDialog");
 
         }
@@ -229,7 +210,7 @@ public class QuizChoixActivity extends AppCompatActivity {
     }
 
     /**
-     * On pause le timer si l'activité est mise en pause
+     * On pause le timer
      */
     @Override
     protected void onPause() {
@@ -271,7 +252,7 @@ public class QuizChoixActivity extends AppCompatActivity {
     }
 
     /**
-     * Classe interne représentant une question du quiz
+     * Classe --> une question du quiz
      */
     static class Question {
         private final String text;

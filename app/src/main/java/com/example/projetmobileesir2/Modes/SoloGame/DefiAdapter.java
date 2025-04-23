@@ -1,4 +1,4 @@
-package com.example.projetmobileesir2.Modes;
+package com.example.projetmobileesir2.Modes.SoloGame;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,10 @@ import com.example.projetmobileesir2.R;
 
 import java.util.List;
 
+/**
+ * adapter pour afficher une liste de défis avec leur nom et icône dans le mode solo
+ */
+
 public class DefiAdapter extends BaseAdapter {
 
     private final Context context;
@@ -22,46 +26,21 @@ public class DefiAdapter extends BaseAdapter {
         this.defis = defis;
     }
 
-    /**
-     * Retourne le nombre d'éléments dans la liste des défis
-     * @return
-     */
     @Override
     public int getCount() {
         return defis.size();
     }
 
-    /**
-     * Retourne l'élément à une position donnée dans la liste des défis
-     * @param position
-     * @return
-     */
     @Override
     public Object getItem(int position) {
         return defis.get(position);
     }
 
-    /**
-     * Retourne l'ID de l'élément à une position donnée
-     * @param position
-     * @return
-     */
     @Override
     public long getItemId(int position) {
         return position;
     }
 
-    /**
-     * Création de la vue pour chaque item dans la liste
-     * Récupèration du défi correspondant à la position
-     * Remplissage du TextView avec le nom du défi
-     * Sélection de  l'icône appropriée en fonction du défi
-     * Renvoie la vue de l'élément à afficher dans la liste
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
-     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
@@ -74,14 +53,14 @@ public class DefiAdapter extends BaseAdapter {
         TextView defiNameTextView = rowView.findViewById(R.id.defiNameTextView);
         ImageView iconImageView = rowView.findViewById(R.id.iconImageView);
 
-        String defi = defis.get(position); //Récupèration du nom du défi à cette position dans la liste
+        String defi = defis.get(position);
 
-        defiNameTextView.setText(defi); // Affichage le nom du défi dans le TextView
+        defiNameTextView.setText(defi);
 
 
         switch (defi) {
             case "Shake It Up!":
-                iconImageView.setImageResource(R.drawable.ic_shake); // Mets une icône qui existe
+                iconImageView.setImageResource(R.drawable.ic_shake);
                 break;
             case "Target Spin":
                 iconImageView.setImageResource(R.drawable.ic_gyroscope);

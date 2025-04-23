@@ -12,6 +12,10 @@ import com.example.projetmobileesir2.R;
 
 import java.util.*;
 
+/**
+ * gère l'affichage, les collisions, les effets visuels et le score en temps réel.
+ */
+
 public class CutTheFruitView extends View {
 
     private final List<Fruit> fruits = new ArrayList<>();
@@ -93,8 +97,8 @@ public class CutTheFruitView extends View {
         handler.postDelayed(() -> {
             if (!isGameRunning || getWidth() == 0) return;
 
-            int howMany = 3 + random.nextInt(3); // 3 à 5 fruits
-            int delayBetween = 200; // 100ms d'écart entre chaque fruit
+            int howMany = 3 + random.nextInt(3);
+            int delayBetween = 200;
 
             for (int i = 0; i < howMany; i++) {
                 final int index = i;
@@ -107,11 +111,11 @@ public class CutTheFruitView extends View {
 
                     float x = random.nextInt(Math.max(1, getWidth() - bmp.getWidth()));
                     fruits.add(new Fruit(x, 0, bmp, spawnBomb));
-                }, index * delayBetween); // ⏱ décalage
+                }, index * delayBetween);
             }
 
-            spawnFruit(); // replanifie le lot suivant
-        }, 800); // toutes les 0.7s ≈ un lot de fruits
+            spawnFruit();
+        }, 800);
     }
 
 
@@ -135,17 +139,17 @@ public class CutTheFruitView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    protected void onDraw(Canvas c) {
+        super.onDraw(c);
 
         for (SplashEffect s : splashes) {
             Paint splashPaint = new Paint();
-            splashPaint.setAlpha(s.lifetime * 17); // fade out
-            canvas.drawBitmap(splashBitmap, s.x, s.y, splashPaint);
+            splashPaint.setAlpha(s.lifetime * 17);
+            c.drawBitmap(splashBitmap, s.x, s.y, splashPaint);
         }
 
         for (Fruit fruit : fruits) {
-            canvas.drawBitmap(fruit.bitmap, fruit.x, fruit.y, null);
+            c.drawBitmap(fruit.bitmap, fruit.x, fruit.y, null);
         }
     }
 
@@ -169,7 +173,7 @@ public class CutTheFruitView extends View {
                     iterator.remove();
 
                     if (fruit.isBomb) {
-                        score = Math.max(0, score - 1); // éviter les scores négatifs
+                        score = Math.max(0, score - 1); // eviter les scores négati
                         updateScore();
                         playSound(R.raw.defeat);
                         splashes.add(new SplashEffect(fruit.x, fruit.y));
@@ -197,8 +201,6 @@ public class CutTheFruitView extends View {
 
 
     }
-
-    // === CLASSES INTERNES ===
 
     private static class Fruit {
         float x, y;

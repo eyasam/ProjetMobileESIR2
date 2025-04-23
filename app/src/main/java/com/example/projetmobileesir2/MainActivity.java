@@ -11,8 +11,13 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projetmobileesir2.Bluetooth.BluetoothActivity;
-import com.example.projetmobileesir2.Modes.SoloGameActivity;
-import com.example.projetmobileesir2.Modes.TrainingActivity;
+import com.example.projetmobileesir2.Modes.SoloGame.SoloGameActivity;
+import com.example.projetmobileesir2.Modes.Training.TrainingActivity;
+
+/**
+ * ecran principal du jeu permet de lancer une partie en solo multijoueur ou en entraînement
+ * gère également la musique de fond et le bouton de contrôle du son
+ */
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,10 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer bgMusic, clickSound;
     private boolean isSoundOn = true;
 
-    /**
-     * Cette méthode initialise l'interface utilisateur, configure les sons et les boutons, et gère
-     * les événements lorsque l'utilisateur interagit avec l'écran d'accueil.
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         clickSound = MediaPlayer.create(this, R.raw.click);
 
-        // Toggle du son via le bouton image
         soundToggleButton.setOnClickListener(view -> {
             isSoundOn = !isSoundOn;
             if (isSoundOn) {
@@ -64,18 +64,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Affiche une boîte de dialogue pour choisir le mode de jeu
     private void showModeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choisissez un mode de jeu")
                 .setItems(new CharSequence[]{"Solo", "Multijoueur"}, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            // Mode Solo
-                            Intent soloIntent = new Intent(MainActivity.this, SelectionDefiActivity.class);
+                            Intent soloIntent = new Intent(MainActivity.this, SoloGameActivity.class);
                             startActivity(soloIntent);
                         } else {
-                            // Mode Multijoueur
                             Intent multiIntent = new Intent(MainActivity.this, BluetoothActivity.class);
                             startActivity(multiIntent);
                         }
@@ -83,10 +80,6 @@ public class MainActivity extends AppCompatActivity {
                 });
         builder.create().show();
     }
-
-    /**
-     * Libère les ressources audio lorsque l'activité est détruite. Cela permet d'éviter les fuites de mémoire.
-     */
 
     @Override
     protected void onDestroy() {
@@ -101,11 +94,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    /**
-     * Cette méthode est appelée lorsque l'activité est mise en pause (par exemple, si l'utilisateur quitte l'application).
-     * Elle permet de mettre la musique de fond en pause si elle est en cours de lecture.
-     */
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -113,11 +101,6 @@ public class MainActivity extends AppCompatActivity {
             bgMusic.pause();
         }
     }
-
-    /**
-     * Cette méthode est appelée lorsque l'activité reprend (par exemple, si l'utilisateur revient sur l'application).
-     * Elle permet de redémarrer la musique de fond si elle est activée.
-     */
 
     @Override
     protected void onResume() {

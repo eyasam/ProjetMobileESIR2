@@ -7,23 +7,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Classe statique de gestion de la connexion Bluetooth active.
- * Fournit une interface simple pour envoyer des messages via le socket.
+ * gestion de la connexion Bluetooth active.
+ * fournit une interface simple pour envoyer des messages via le socket.
  */
 public class BluetoothConnectionHolder {
 
     private static BluetoothSocket socket;
 
     /**
-     * Définit le socket Bluetooth à utiliser pour toute communication.
+     * définit le socket Bluetooth à utiliser pour toute communication.
      */
     public static void setSocket(BluetoothSocket s) {
         socket = s;
     }
 
     /**
-     * Envoie un message texte via le socket Bluetooth.
-     * Le message est suivi d’un saut de ligne pour faciliter la lecture côté réception.
+     * envoie un message texte via le socket Bluetooth.
+     * le message est suivi d’un saut de ligne pour faciliter la lecture côté réception.
      */
     public static void sendMessage(String msg) {
         if (socket == null) {

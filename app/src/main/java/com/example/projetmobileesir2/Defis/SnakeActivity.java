@@ -6,15 +6,17 @@ import android.os.SystemClock;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.media.MediaPlayer;
-
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.MultiplayerGame.MultiplayerGameActivity;
 import com.example.projetmobileesir2.R;
-import com.example.projetmobileesir2.ScoreDialogFragment;
-
+import com.example.projetmobileesir2.Modes.ScoreSoloTrainingFragment;
 import android.content.SharedPreferences;
+
+/**
+ * activité du défi Snake jouable en solo ou multijoueur
+ * affiche le score le temps restant et gère la fin de partie
+ */
+
 public class SnakeActivity extends AppCompatActivity {
 
     private TextView scoreText, timeLeftText;
@@ -30,13 +32,6 @@ public class SnakeActivity extends AppCompatActivity {
     private boolean isPaused = false;
     private CountDownTimer timer;
 
-    /**
-     * Charge le layout XML
-     * Récupère les données envoyées via l'intent
-     * Instancie la vue Snake, lui passe la référence vers le TextView score
-     * Quand le jeu se termine (collision ou temps écoulé), cette callback est déclenchée avec le setOnGameOverListener
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,75 +45,41 @@ public class SnakeActivity extends AppCompatActivity {
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
 
         snakeView = new SnakeView(this, scoreText);
-        snakeView.setTimeLeftText(timeLeftText);// Lie le TextView du timer
-        container.addView(snakeView); // Ajoute le SnakeView au conteneur
+        snakeView.setTimeLeftText(timeLeftText);
+        container.addView(snakeView);
 
         snakeView.setOnGameOverListener(score -> {
             finalScore = score;
-            addScoreToTotal(score); // Ajoute le score au total sauvegardé
-            playVictorySound(); // Joue un son de victoire
-            showScorePopup(); // Affiche un popup avec le score
+            addScoreToTotal(score);
+            playVictorySound();
+            showScorePopup();
         });
 
-        //startTimer(timeLeftMillis);
-    }
-
-    /*private void startTimer(long millis) {
-        timerStartedAt = SystemClock.elapsedRealtime();
-
-        timer = new CountDownTimer(millis, 1000) {
-            public void onTick(long millisUntilFinished) {
-                timeLeftMillis = millisUntilFinished;
-                timeLeftText.setText("Temps: " + millisUntilFinished / 1000 + "s");
-            }
-
-            public void onFinish() {
-                timeLeftMillis = 0;
-                snakeView.restartGame(); // en cas de besoin
-            }
-        }.start();
     }
 
 
-     */
-
-    /**
-     * Affichage du popup de score en mode solo ou entrainement, ou envoie le score au gestionnaire multijoueur (eregistrer localement)
-     * et on ferme l'activité
-     */
     private void showScorePopup() {
         if (isMultiplayer) {
             MultiplayerGameActivity.saveLocalScore(finalScore);
             finish();
         } else {
-            ScoreDialogFragment.newInstance(finalScore, mode)
+            ScoreSoloTrainingFragment.newInstance(finalScore, mode)
                     .show(getSupportFragmentManager(), "scoreDialog");
         }
     }
 
-
-    /**
-     * Màj du score total stocké localement dans les sharedPreferences pour calculer le score total pour le mode solo
-     * @param score
-     */
     private void addScoreToTotal(int score) {
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int totalScore = prefs.getInt("totalScore", 0);
         prefs.edit().putInt("totalScore", totalScore + score).apply();
     }
 
-    /**
-     * Joue un son de victoire à la fin de la partie
-     */
     private void playVictorySound() {
         MediaPlayer mp = MediaPlayer.create(this, R.raw.victory);
         mp.start();
         mp.setOnCompletionListener(MediaPlayer::release);
     }
 
-    /**
-     * Gère la mise en pause de l’activité
-     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -129,9 +90,6 @@ public class SnakeActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Gère la reprise de l’activité après une pause
-     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -139,7 +97,6 @@ public class SnakeActivity extends AppCompatActivity {
             long delta = SystemClock.elapsedRealtime() - pauseTime;
             timeLeftMillis = Math.max(0, timeLeftMillis - delta);
             isPaused = false;
-            //startTimer(timeLeftMillis);
         }
     }
 }

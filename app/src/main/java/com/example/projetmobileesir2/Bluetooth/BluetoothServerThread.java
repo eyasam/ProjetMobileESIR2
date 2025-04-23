@@ -9,24 +9,26 @@ import android.content.Intent;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.MultiplayerGame.MultiplayerGameActivity;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.UUID;
 
 /**
- * Attend une connexion entrante, lit un message initial "READY" puis démarre l’activité multijoueur.
- * Lance également une écoute continue des messages entrants.
+ * attend une connexion entrante, lit un message initial "READY" puis démarre l’activité multijoueur.
+ * lance également une écoute continue des messages entrants.
  */
 public class BluetoothServerThread extends Thread {
 
     private final BluetoothServerSocket serverSocket;
     private final Context context;
-    private static final UUID APP_UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+
+    //on a genere uuid avec https://www.uuidgenerator.net
+    private static final UUID APP_UUID = UUID.fromString("83e2bb59-c086-4d86-a59d-a3cce53e64e2");
 
     /**
-     * Initialise le serveur Bluetooth et prépare le socket d’écoute.
+     * initialise le serveur Bluetooth et prépare le socket d’écoute.
      */
     public BluetoothServerThread(BluetoothAdapter bluetoothAdapter, Context context) {
         this.context = context;
@@ -45,8 +47,8 @@ public class BluetoothServerThread extends Thread {
     }
 
     /**
-     * Attend une connexion client, lit un message READY, puis lance l'activité multijoueur.
-     * Lance également l'écoute asynchrone des messages.
+     * attend une connexion client, lit un message READY, puis lance l'activité multijoueur.
+     * lance également l'écoute asynchrone des messages.
      */
     @Override
     public void run() {
@@ -94,7 +96,7 @@ public class BluetoothServerThread extends Thread {
     }
 
     /**
-     * Démarre un thread en arrière-plan pour lire les messages Bluetooth entrants
+     * démarre un thread en arrière-plan pour lire les messages Bluetooth entrants
      * et les diffuser à l’app via un Intent local.
      */
     private void listenForMessages(BluetoothSocket socket) {

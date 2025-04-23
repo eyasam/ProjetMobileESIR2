@@ -27,6 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * permet d'activer le Bluetooth
+ * scanner les appareils à proximité
+ * établir une connexion client/serveur
+ */
+
 public class BluetoothActivity extends AppCompatActivity {
 
     // private static final int REQUEST_ENABLE_BT = 1;
@@ -94,7 +100,7 @@ public class BluetoothActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
-        // 1. Initialisation Bluetooth
+        // initialisation Bluetooth
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Bluetooth non supporté", Toast.LENGTH_SHORT).show();
@@ -102,7 +108,7 @@ public class BluetoothActivity extends AppCompatActivity {
             return;
         }
 
-        // 2. Demander à rendre l'appareil visible pour les autres
+        // demander à rendre l'appareil visible pour les autres
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300); // 5 minutes
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADVERTISE) == PackageManager.PERMISSION_GRANTED) {
@@ -112,12 +118,11 @@ public class BluetoothActivity extends AppCompatActivity {
             // Tu peux aussi appeler permissionLauncher ici si besoin
         }
 
-        // 3. Initialisation des boutons et UI
         deviceListView = findViewById(R.id.deviceListView);
         deviceListAdapter = new ArrayAdapter<>(this, R.layout.list_item_device, R.id.deviceName, deviceDisplayList);
         deviceListView.setAdapter(deviceListAdapter);
 
-        // 4. Clic sur appareil détecté = tentative de connexion
+        // clic sur appareil détecté = tentative de connexion
         deviceListView.setOnItemClickListener((parent, view, position, id) -> {
             String item = deviceDisplayList.get(position);
             String[] parts = item.split(" - ");
@@ -129,11 +134,10 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         });
 
-        // 5. Boutons Scan / Stop
         findViewById(R.id.startScanButton).setOnClickListener(v -> checkPermissionsAndStart());
         findViewById(R.id.stopScanButton).setOnClickListener(v -> stopClassicScan());
 
-        // 6. Bluetooth enable launcher
+        // bluetooth enable launcher
         enableBluetoothLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -144,7 +148,7 @@ public class BluetoothActivity extends AppCompatActivity {
                     }
                 });
 
-        // 7. Lancer le serveur Bluetooth
+        // lancer le serveur Bluetooth
         serverThread = new BluetoothServerThread(bluetoothAdapter, this);
         serverThread.start();
     }

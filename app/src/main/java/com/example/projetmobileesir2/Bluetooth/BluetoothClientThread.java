@@ -10,7 +10,7 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.example.projetmobileesir2.Modes.MultiplayerGameActivity;
+import com.example.projetmobileesir2.Modes.MultiplayerGame.MultiplayerGameActivity;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,18 +18,17 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 /**
- * Gère la connexion à un serveur Bluetooth, l'envoi initial du message READY,
+ * gère la connexion à un serveur Bluetooth, l'envoi initial du message READY,
  * la réception de messages asynchrones, et le démarrage de l'activité multijoueur.
  */
 public class BluetoothClientThread extends Thread {
 
     private final BluetoothSocket socket;
     private final Context context;
-    private static final UUID APP_UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+    private static final UUID APP_UUID = UUID.fromString("83e2bb59-c086-4d86-a59d-a3cce53e64e2");
 
     /**
-     * Constructeur du client.
-     * Initialise un socket Bluetooth vers le device distant.
+     * initialise un socket Bluetooth vers le device distant.
      */
     public BluetoothClientThread(BluetoothDevice device, Context context) {
         this.context = context;
@@ -48,7 +47,7 @@ public class BluetoothClientThread extends Thread {
     }
 
     /**
-     * Démarre la connexion au serveur, envoie READY, écoute les messages entrants
+     * démarre la connexion au serveur, envoie READY, écoute les messages entrants
      * et lance l'activité multijoueur.
      */
     @Override
@@ -90,7 +89,7 @@ public class BluetoothClientThread extends Thread {
     }
 
     /**
-     * Écoute en continu les messages Bluetooth entrants via un BufferedReader,
+     * ecoute en continu les messages Bluetooth entrants via un BufferedReader,
      * puis les diffuse localement à l'app via un Intent.
      */
     private void listenForMessages() {
