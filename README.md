@@ -88,4 +88,4 @@ Contenu :
 - Code Java complet
 - Ressources (sons, images, layouts XML)
 - README.md
-- Présentation PDF
+- Présentation PDF + une Démo Bluetooth 
