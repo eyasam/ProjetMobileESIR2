@@ -69,8 +69,7 @@ Créer un jeu mobile Android où deux téléphones peuvent se connecter entre eu
 
 ## 📌 Notes personnelles
 
-•⁠  ⁠Pas mal de galère avec les permissions Bluetooth (surtout avec les versions récentes d’Android)   
-
+•⁠  ⁠Pas mal de galère avec les permissions Bluetooth (surtout avec les versions récentes d’Android)    
 •⁠  ⁠La synchro entre les 2 appareils, c’était un peu technique mais ça marche bien maintenant   
 •⁠  ⁠Les sons à la fin, c’est pour l’ambiance 😎   
 •⁠  Le mode entraînement est bien utile pour tester les défis sans pression   
