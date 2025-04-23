@@ -89,3 +89,7 @@ Contenu :
 - Ressources (sons, images, layouts XML)
 - README.md
 - Présentation PDF + une Démo Bluetooth 
+
+
+📄 [Voir la Présentation PDF](https://github.com/eyasam/ProjetMobileESIR2/blob/main/ProgMobileProjetESIR2SI_ELANOUAR_SAMMARI.pdf)  
+📽️ [Voir la Démo Bluetooth](https://github.com/eyasam/ProjetMobileESIR2/blob/main/Video_Demo_Bluetooth.mp4)
