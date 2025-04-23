@@ -88,3 +88,4 @@ Contenu :
 - Code Java complet
 - Ressources (sons, images, layouts XML)
 - README.md
+- Présentation PDF
