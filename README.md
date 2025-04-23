@@ -40,7 +40,7 @@ Créer un jeu mobile Android où deux téléphones peuvent se connecter entre eu
 | Quiz (QCM)            | Question/réponse       | Choisir la bonne réponse à un QCM illustré    | Solo / Multi / Entraînement |
 | Gyroscope Challenge   | Capteurs (orientation) | Trouver un angle précis avec le gyroscope     | Solo / Multi / Entraînement |
 | Shake Challenge       | Capteurs (accéléro)    | Secouer le téléphone à fond pendant un chrono | Solo / Multi / Entraînement |
-| Snake                 | Mouvement écran        | Jeu Snake classique, plus tu tiens, mieux c’est | Solo / Entraînement uniquement |
+| Snake                 | Mouvement écran        | Jeu Snake classique, plus tu tiens, mieux c’est | Solo / Multi/Entraînement |
 
 ---
 
